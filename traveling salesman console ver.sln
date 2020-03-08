@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "traveling salesman console ver", "traveling salesman console ver.csproj", "{EF6797F0-C1A2-4660-9384-F031E5418340}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EF6797F0-C1A2-4660-9384-F031E5418340}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF6797F0-C1A2-4660-9384-F031E5418340}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF6797F0-C1A2-4660-9384-F031E5418340}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF6797F0-C1A2-4660-9384-F031E5418340}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8B7B2B7D-7627-4116-8683-F8BAC974AB0D}
+	EndGlobalSection
+EndGlobal
