@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "run": {
+      "commandName": "Project",
+      "workingDirectory": "G:\\Travelin salesman console\\traveling salesman console ver\\bin\\Debug\\netcoreapp3.1",
+      "environmentVariables": {
+        "PATH": "c:\\path\\where\\the\\dll-is;$(Path)"
+      }
+    }
+  }
+}

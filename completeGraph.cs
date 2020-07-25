@@ -8,25 +8,36 @@ namespace traveling_salesman_console_ver
 {
     public class completeGraph
     {
+        // properties
         public long[,] distanceMatrix { get; set; }
+        // why 
         public static long no_of_nodes { get; set; }
+
         public  static Node[] lastEdgeNodes= new Node[2];
+
         static public Node[] Nodes ; // use static to avoid duplication of nodes
+
+
         public class shortestpath
         {
             public Node source;
             public Node end;
             public long weight;
             public List<Undirected_Edge> pathEdges = new List<Undirected_Edge>();
+
             public shortestpath(Node s,Node e) 
             {
                 source = s;
                 end = e;
             }
-        }        
+
+        }
+        
         public Dictionary<long, long> shortestdistance = new Dictionary<long, long>();
+
         public Node keynode;
         public long keyvalue;
+
         public class Node
         {
             public long location;
@@ -34,18 +45,26 @@ namespace traveling_salesman_console_ver
             public int possible_edges;
             public int index=1;
             public List<Node> adjacentNodes = new List<Node>();
+            
+
             // dictionary to represent distance to different locations
             public Dictionary<long, long> distance;
+
             //node constructor
-            public Node() {}
+            public Node() 
+            {
+
+            }
             public Node(long local, Dictionary<long, long> dic)
             {
                 this.location = local;
                 this.distance = new Dictionary<long, long>(dic);
                 this.edges_found = 0;
                 this.possible_edges = 2;
+
             }
         }
+
         public Undirected_Edge lastEdge { get; set; }
         public class Hamilton_cycle
         {
@@ -63,7 +82,11 @@ namespace traveling_salesman_console_ver
                 edges = new Dictionary<string, Undirected_Edge>();
 
             }
+
+
         }
+
+
         public Hamilton_cycle minimumHamiltonCycle = new Hamilton_cycle();
         public class Undirected_Edge
         {
@@ -76,14 +99,18 @@ namespace traveling_salesman_console_ver
             public bool mark;
             long temp;
             public shortestpath arbitarypath;
+        
             public Undirected_Edge() { }
+
             public Undirected_Edge(Node n1,Node n2) 
             {
                 this.Node1 = n1;
                 this.Node2 = n2;
                 this.node1 = n1.location;
                 this.node2 = n2.location;
-            } 
+            }
+
+         
             public Undirected_Edge(long destination, long source)
             {
                 this.node1 = destination;
@@ -91,64 +118,128 @@ namespace traveling_salesman_console_ver
                 this.weight = Nodes[node2].distance[node1];
                 this.Node1 = Nodes[node1];
                 this.Node2 = Nodes[node2];
+
+
                 if (node1 > node2)
                 {
                     temp = this.node1;
                     this.node1 = node2;
                     this.node2 = temp;
+
+
+
                 }
+
+
                 // gives a uniquie id concatenation of smallest value node and highest value node
                 this.id = string.Format("{0}:{1}", node1, node2);
+
+
+
+
+
             }
+
         }
+
         public completeGraph(long[,] data)
-        { // check for no of zeros in each row
+        {
+            // check for no of zeros in each row
+
             try
             {
                 if (isValidCompleteGraph(data))
                 {
                     distanceMatrix = data;
                     no_of_nodes = data.GetLength(0);
+
                 }
                 else
                 {
                     throw new notValidCompleteGraph("not complete graph");
+
                 }
+
+
+
             }
+
             catch (notValidCompleteGraph e)
             {
                 Console.WriteLine(e.Message);
+
+
             }
             // initialise Nodes array
             Nodes = new Node[no_of_nodes];
+
             Initialise_nodes();
             FindMinHamiltoncycle();
             lastedge();
+            
+
+
+
+
+
+
+
+
+
+
         }
+
+
+        
+
+
+
+
+
+
         // if there ia row in matrix more than one zero in thematrix and if no of rows is not equal to no of collumns
+
+
         //exceptions
         public class notValidCompleteGraph : Exception 
         {
             public notValidCompleteGraph() { }
+
             public notValidCompleteGraph(string message)
             : base(message)
             {
             }
+
             public notValidCompleteGraph(string message, Exception inner)
                 : base(message, inner)
             {
             }
+
+
+
+
+
+
         } 
+
+
+
+
         // methods
-        // function to get the distance between two nodes       
+
+        // function to get the distance between two nodes
+        
         public long Getdistance(long from, long to)
         {
             return distanceMatrix[from, to];
 
         }
+
+   
         // function to check if given data is valid graph
         public bool isValidCompleteGraph(long[,] graph) 
-        {  
+        {
+            
             long no_of_rows = graph.GetLength(0);
             long no_of_collumns = graph.GetLength(1);
             long[] no_of_zeros = new long[no_of_rows];
@@ -163,30 +254,51 @@ namespace traveling_salesman_console_ver
                         {
                             // not valid graph
                             return false;
+                        
                         }
                     }
+
                 }
+
                 return true;
             }
             else 
             {
-                return false;           
+                return false;
+            
             }
+
         }
+
         // function to initialise nodes and store in Nodes array 
         public void Initialise_nodes()
         {
+
             Dictionary<long, long> dist = new Dictionary<long, long>();
             for (long i = 0; i < no_of_nodes; i++)
             { 
+
                 for (long j = 0; j < no_of_nodes; j++)
                 {
                     dist[j] = Getdistance(i, j);
+
                 }
+
+
+                
+
                 Node temp = new Node(i, dist);
                 Sort(temp);
                 Nodes[i] = temp;
+
+
+
+
             }
+
+
+
+
         }
         // function to sort node distance data
         public void Sort(Node nm)
@@ -196,6 +308,7 @@ namespace traveling_salesman_console_ver
         //function to print the nodes
         public void printNodes() 
         {
+
             for (int i = 0; i < no_of_nodes; i++)
             {
                 Console.WriteLine("for node " + i);
@@ -205,22 +318,35 @@ namespace traveling_salesman_console_ver
                     Console.WriteLine("to: {0}, Value: {1}", item.Key, item.Value);
                 }
             }
+
+
+
         }
+
+
+
         // function to finde edged till last max value edge for whic we can yse a shortest path for arbitary path
 
         public void FindMinHamiltoncycle() 
         {
+           
+
             foreach (Node n in Nodes)
             {
+                
+
                 //Console.WriteLine("check node " + n.location);
                 //Console.WriteLine("possible edges" + n.possible_edges);
                 //Console.WriteLine("edges found " + n.edges_found);
+               
+
                 if (n.edges_found == 2)
                 {
                     //if both edges are found it wont do anything
                 }
                 else
-                {  
+                {
+                    
                     while (n.index <= n.possible_edges) 
                     {
                         long check = n.distance.ElementAt(n.index).Key;
@@ -243,24 +369,43 @@ namespace traveling_salesman_console_ver
                                         if (m.location == check)
                                         {
                                             notloop = false;
+
                                         }
+
+
+
                                     }
+
+
+
+
                                 }
-                            }                          
+                                
+                            
+                            
+                            }
+                           
                             if (n.location == Nodes[check].distance.ElementAt(index2).Key && Nodes[check].edges_found!=2&&notloop)
                             {
+                               
                                     //Console.WriteLine("node1:" + check + " node2:" + check2 + "match");
                                     n.index++;
                                     Undirected_Edge temp = new Undirected_Edge(check, check2);
                                     Undirected_Edge e;
                                     //Console.WriteLine("id:" + ed.id);
+
                                     // below code prevents duplicates
                                     if (minimumHamiltonCycle.edges.Count == no_of_nodes - 1) // get up to only -1 edges are left
                                     {
                                         return;
                                     }
+
+
                                     if (minimumHamiltonCycle.edges.TryGetValue(temp.id, out e))
-                                    {}
+                                    {
+
+                                    }
+
                                     else
                                     {
                                         minimumHamiltonCycle.edges.Add(temp.id, temp);
@@ -271,12 +416,34 @@ namespace traveling_salesman_console_ver
                                         
                                         n.adjacentNodes.Add(Nodes[check]) ;
                                         Nodes[check].adjacentNodes.Add(n);
+                                       
+                                        
+                                        
+                                        
+
+
+
+                                       
+
+                                        
+                                        
+
+
                                     }
+
+
+                                
+
+                               
                             }
                         }
+
                         n.index++;
+     
                     }
                 }
+
+               
             }
             foreach (Node n in Nodes)
             {
@@ -285,11 +452,15 @@ namespace traveling_salesman_console_ver
                     n.possible_edges += 1;
                 }
             }
+
             if (minimumHamiltonCycle.edges.Count < no_of_nodes - 1)
             {
                 FindMinHamiltoncycle();
             }
+
+
         }
+
         // function to print he hamiltonpath
         public void printMinHamiltonPath()
         {
@@ -297,26 +468,46 @@ namespace traveling_salesman_console_ver
             {
                 Console.WriteLine("node: " + item.Key);
                 Console.WriteLine(" weight:" + item.Value.weight);
+
+
             }
+
+
+
+
         }
+
         // function to find the lastnodes without edges
         public void lastedge()
         {
+            
+
             foreach (Node n in Nodes)
-            { 
+            {
+                
                 if (n.edges_found == 1)
                 {
                     if(lastEdgeNodes[0] == null)
                     {
                         lastEdgeNodes[0] = n;
+
                     }
                     else
                     {
                         lastEdgeNodes[1] = n;
                     }
+
                 }
-            }  
+
+
+            }
+
+            
             djikstra(distanceMatrix, lastEdgeNodes[0], lastEdgeNodes[1]);
+
+
+
+
         }
         // function gorr djikstras algo
         public void djikstra(long[,] graph, Node source, Node end)
@@ -324,18 +515,26 @@ namespace traveling_salesman_console_ver
             lastEdge = new Undirected_Edge(source.location,end.location);
             bool[] visited = new bool[no_of_nodes];
             Node[] previousnode = new Node[no_of_nodes];
+
+
+
             foreach (Node n in Nodes)
             {
                 // initialise
                 shortestdistance.Add(n.location, graph[source.location, n.location]);
                 visited[n.location] = false;
                 previousnode[n.location] = source;
+
+
             }
             visited[source.location] = true;
             //order by value
             shortestdistance.OrderBy(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+               
             foreach (Node no in Nodes)
-            {   // get the minimum vaalue distance not visited
+            {
+
+                // get the minimum vaalue distance not visited
                 for (int v = 0; v < no_of_nodes; ++v)
                 {
                     if (visited[v] == false)
@@ -345,26 +544,42 @@ namespace traveling_salesman_console_ver
                     }
                 }
                 visited[keynode.location] = true;
+
                 if (keynode.location == end.location)
                 {
+                    
                     //Console.WriteLine("distance fronm " + source.location + " to " + end.location);
                     //Console.WriteLine(shortestdistance[keynode.location]);
                     shortestpath sm = new shortestpath(source,end);
                     sm.weight = shortestdistance[keynode.location];
                     lastEdge.weight = sm.weight;
+                    
+                    
                     Node i = end;
+                    
+
                     while (i.location != source.location)
                     {
+
                         Node currentnode = i;
+
                         i = previousnode[currentnode.location];
                         Undirected_Edge e = new Undirected_Edge(currentnode.location,i.location);
                         sm.pathEdges.Add(e);
-                        //Console.WriteLine(currentnode.location + " to " + i.location);       
+                        //Console.WriteLine(currentnode.location + " to " + i.location);
+                        
+
+
                     }
                     lastEdge.arbitarypath = sm;
                     lastEdge.id += "arbitary";
                     minimumHamiltonCycle.edges.Add(lastEdge.id,lastEdge);
+
+                 
+
                 }
+
+
                 foreach (Node n in Nodes)
                 {
                     long newdistance = keyvalue + graph[keynode.location, n.location];
@@ -375,9 +590,19 @@ namespace traveling_salesman_console_ver
                         shortestdistance[n.location] = newdistance;
                         previousnode[n.location] = keynode;
                     }
+
+
+
+
+
                 }
+
                 shortestdistance.OrderBy(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
             }
+
+            // check
+
+
         }
         public void printArbitaryPath(Undirected_Edge ed) 
         {
@@ -388,10 +613,15 @@ namespace traveling_salesman_console_ver
                 Console.WriteLine(e.id);
                 Console.WriteLine(e.weight);
             }
+ 
         }
         public void printLastEdgeArbitaryPath() 
         {
-            printArbitaryPath(lastEdge);  
+            printArbitaryPath(lastEdge);
+        
+        
+        
         }
     }
+
 }
