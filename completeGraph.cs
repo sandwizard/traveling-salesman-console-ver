@@ -12,6 +12,32 @@ namespace traveling_salesman_console_ver
         public static long no_of_nodes { get; set; }
         public  static Node[] lastEdgeNodes= new Node[2];
         static public Node[] Nodes ; // use static to avoid duplication of nodes
+        // the constructor below is run when the class is created
+        public completeGraph(long[,] data)
+        {
+            // check for no of zeros in each row
+            try
+            {
+                if (isValidCompleteGraph(data))
+                {
+                    distanceMatrix = data;
+                    no_of_nodes = data.GetLength(0);
+                }
+                else
+                {
+                    throw new notValidCompleteGraph("not complete graph");
+                }
+            }
+            catch (notValidCompleteGraph e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            // initialise Nodes array
+            Nodes = new Node[no_of_nodes];
+            Initialise_nodes();
+            FindMinHamiltoncycle();
+            lastedge();
+        }
         public class shortestpath
         {
             public Node source;
@@ -101,31 +127,7 @@ namespace traveling_salesman_console_ver
                 this.id = string.Format("{0}:{1}", node1, node2);
             }
         }
-        public completeGraph(long[,] data)
-        {
-            // check for no of zeros in each row
-            try
-            {
-                if (isValidCompleteGraph(data))
-                {
-                    distanceMatrix = data;
-                    no_of_nodes = data.GetLength(0);
-                }
-                else
-                {
-                    throw new notValidCompleteGraph("not complete graph");
-                }
-            }
-            catch (notValidCompleteGraph e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            // initialise Nodes array
-            Nodes = new Node[no_of_nodes];
-            Initialise_nodes();
-            FindMinHamiltoncycle();
-            lastedge();           
-        }
+       
             // if there ia row in matrix more than one zero in thematrix and if no of rows is not equal to no of collumns
         //exceptions
         public class notValidCompleteGraph : Exception 
