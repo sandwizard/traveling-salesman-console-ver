@@ -18,7 +18,7 @@ FindHamiltoncycle() // as the name suggest explanation below. This is where i ne
 
 lastedge() // the last edge is not found using the same approach but by using shortest path willexplain below
 
-______FindHamiltoncycle()_________
+# FindHamiltoncycle()
 
 The idea is to find the 2 minimum value edges of a node which are also minimum value edges of other node connected by the same edge . this confirms that this edge is contained in the minimum Hamiltonian path. this is done repetitively for every node.
 
@@ -26,7 +26,7 @@ Using the previously sorted list of edges of each node we check if the first 2 e
 
 This is done for up-to the last edge excluding the last edge .
 
-____lastedge()_____
+# lastedge()
 
 This is because the last edge directly connects the remaining node but its weight may be extremely large or small "Lucky" . if its weight happens to be large and is taken as an edge for the cycle this makes all previously selected minimum edges useless .Instead i find an arbitrary path between the two remaining nodes using Dijkstra shortest path which may or may not be the direct connection and store the path taken and its cumulative weight.
 
