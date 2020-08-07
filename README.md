@@ -1,6 +1,6 @@
 # traveling-salesman-console-ver
-an algorith to solve traveling salesman for a completegraph in polynomial time
-note >would be helpful if someone could confirm
+an algorith to solve traveling salesman for a completegraph a different approch.
+note >would be helpful if someone could check the time complexity.
 
 
 # How it works
