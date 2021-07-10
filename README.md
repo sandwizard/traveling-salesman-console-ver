@@ -18,8 +18,10 @@ according to https://www.math.uwaterloo.ca/tsp/world/lulog.html
 
 
 my algorithm
-solluriont : 12894
-sollution time few millisec on am modern cpu
+
+sollution : 12894
+
+sollution time :few millisec on am modern cpu
 
 after underclocking to test it still completed in a few sec you can run to confirm
 
