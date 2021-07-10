@@ -21,8 +21,7 @@ my algorithm
 solluriont : 12894
 sollution time few millisec on am modern cpu
 
-after underclockint to test it still completed in a few sec 
-you can run to confirm
+after underclocking to test it still completed in a few sec you can run to confirm
 
 
 
