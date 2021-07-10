@@ -1,5 +1,5 @@
 # traveling-salesman-console-ver
-an fast  algorith to solve traveling salesman clost to optimal solution.
+an fast  algorith to solve traveling salesman relatively close to optimal solution.
 
 link to test data:
 https://www.math.uwaterloo.ca/tsp/data/index.html
@@ -21,7 +21,7 @@ my algorithm
 
 sollution : 12894
 
-sollution time :few millisec on am modern cpu
+sollution time :few millisec on an modern cpu
 
 after underclocking to test it still completed in a few sec you can run to confirm
 
