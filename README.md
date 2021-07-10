@@ -4,6 +4,24 @@ an fast  algorith to solve traveling salesman clost to optimal solution.
 link to test data:
 https://www.math.uwaterloo.ca/tsp/data/index.html
 
+#Performance
+
+
+according to https://www.math.uwaterloo.ca/tsp/world/lulog.html
+luxmberg computational log -lu980
+Optimal Value:  11340
+Solution Method:  concorde (default settings), QSopt LP solver
+Solution Time:  1681.68 seconds, AMD Athlon 1.33 GHz
+
+
+my algorithm
+solluriont : 12894
+sollution time few millisec on am modern cpu
+
+after underclockint to test it still completed in a few sec 
+you can run to confirm
+
+
 
 
 # How it works
