@@ -8,10 +8,13 @@ https://www.math.uwaterloo.ca/tsp/data/index.html
 
 
 according to https://www.math.uwaterloo.ca/tsp/world/lulog.html
-luxmberg computational log -lu980
-Optimal Value:  11340
-Solution Method:  concorde (default settings), QSopt LP solver
-Solution Time:  1681.68 seconds, AMD Athlon 1.33 GHz
+  luxmberg computational log -lu980 
+
+  Optimal Value:  11340
+  
+  Solution Method:  concorde (default settings), QSopt LP solver
+  
+  Solution Time:  1681.68 seconds, AMD Athlon 1.33 GHz
 
 
 my algorithm
