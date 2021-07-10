@@ -16,22 +16,24 @@ namespace traveling_salesman_console_ver
         public completeGraph(long[,] data)
         {
             // check for no of zeros in each row
-            try
-            {
-                if (isValidCompleteGraph(data))
-                {
-                    distanceMatrix = data;
-                    no_of_nodes = data.GetLength(0);
-                }
-                else
-                {
-                    throw new notValidCompleteGraph("not complete graph");
-                }
-            }
-            catch (notValidCompleteGraph e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            distanceMatrix = data;
+            no_of_nodes = data.GetLength(0);
+            //try
+            //{
+            //    if (isValidCompleteGraph(data))
+            //    {
+            //        distanceMatrix = data;
+            //        no_of_nodes = data.GetLength(0);
+            //    }
+            //    else
+            //    {
+            //        throw new notValidCompleteGraph("not complete graph");
+            //    }
+            //}
+            //catch (notValidCompleteGraph e)
+            //{
+            //    Console.WriteLine(e.Message);
+            //}
             // initialise Nodes array
             Nodes = new Node[no_of_nodes];
             Initialise_nodes();
@@ -209,6 +211,8 @@ namespace traveling_salesman_console_ver
             }
         }
         // function to finde edged till last max value edge for whic we can yse a shortest path for arbitary path
+      // find a wway to make thee checking of minn vaklue edge on nodes ascnchronous
+
         public void FindMinHamiltoncycle() 
         {
             foreach (Node n in Nodes)

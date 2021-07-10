@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.ComponentModel.Design.Serialization;
 
 
 namespace traveling_salesman_console_ver
 {
     class Program
     {
+        
+
         static public  long[,] DistanceMatrix = {
         {0, 2451, 713, 1018, 1631, 1374, 2408, 213, 2571, 875, 1420, 2145, 1972},
         {2451, 0, 1745, 1524, 831, 1240, 959, 2596, 403, 1589, 1374, 357, 579},
@@ -20,12 +26,37 @@ namespace traveling_salesman_console_ver
         {2145, 357, 1453, 1280, 586, 887, 1114, 2300, 653, 1272, 1017, 0, 504},
         {1972, 579, 1260, 987, 371, 999, 701, 2099, 600, 1162, 1200, 504, 0},
       };
+        
         static void Main(string[] args)
         {
-            completeGraph c = new completeGraph(DistanceMatrix);
-            c.printMinHamiltonPath();
+            //GenerateGraph graph = new GenerateGraph(1979);
+            GenerateGraph graph = new GenerateGraph();
+            graph.from_tsp_data("D:/Work/Github/Repo/lu980.tsp");
+            //for (int i = 0; i < graph.coordinate_graph.GetLength(0); i++)
+            //{
+            //    for (int j = 0; j < graph.coordinate_graph.GetLength(1); j++)
+            //    {
+            //        Console.Write(graph.coordinate_graph[i, j] + "\t");
+            //    }
+            //    Console.WriteLine();
+            //}
+            //for (int i = 0; i < graph.distance_matrix.GetLength(0); i++)
+            //{
+            //    for (int j = 0; j < graph.distance_matrix.GetLength(1); j++)
+            //    {
+            //        Console.Write(graph.distance_matrix[i, j] + "\t");
+            //    }
+            //    Console.WriteLine();
+            //}
+
+            Console.WriteLine("start now");
+            completeGraph c = new completeGraph(graph.distance_matrix);
+            //Console.WriteLine("end now");
+            //c.printMinHamiltonPath();
             c.minimumHamiltonCycle.totalweight();
             c.printLastEdgeArbitaryPath();
+
+
         }
     }
 }
