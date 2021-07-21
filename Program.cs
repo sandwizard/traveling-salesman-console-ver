@@ -152,7 +152,7 @@ namespace traveling_salesman_console_ver
             }
             //GenerateGraph graph = new GenerateGraph(1979);
             GenerateGraph graph = new GenerateGraph();
-            graph.from_tsp_data("D:/Work/Github/Repo/mu1979.tsp");
+            graph.from_tsp_data("D:/Work/Github/Repo/lu980.tsp");
             //for (int i = 0; i < graph.coordinate_graph.GetLength(0); i++)
             //{
             //    for (int j = 0; j < graph.coordinate_graph.GetLength(1); j++)
@@ -171,7 +171,7 @@ namespace traveling_salesman_console_ver
             //}
 
             Console.WriteLine("start now");
-            completeGraph c = new completeGraph(DistanceMatrix);
+            completeGraph c = new completeGraph(graph.distance_matrix);
             //Console.WriteLine("end now");
             c.printMinHamiltonPath();
             c.store_cycle();

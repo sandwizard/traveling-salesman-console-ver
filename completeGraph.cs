@@ -14,7 +14,7 @@ namespace traveling_salesman_console_ver
         public static long no_of_nodes { get; set; }
         public static Node[] lastEdgeNodes = new Node[2];
         static public Node[] Nodes;
-        public  Node[] sorted_nodes;// use static to avoid duplication of nodes
+        public  static Node[] sorted_nodes;// use static to avoid duplication of nodes
         // the constructor below is run when the class is created
         public completeGraph(long[,] data)
         {
@@ -39,6 +39,7 @@ namespace traveling_salesman_console_ver
             //}
             // initialise Nodes array
             Nodes = new Node[no_of_nodes];
+            sorted_nodes = new Node[no_of_nodes];
             Initialise_nodes();
             FindMinHamiltoncycle();
             //based_on_priority();
@@ -263,7 +264,6 @@ namespace traveling_salesman_console_ver
         
         }
 
-        public void based_on_priority() 
         class NodeComparer : IComparer
         {
             public int Compare(object x, object y)
@@ -273,25 +273,29 @@ namespace traveling_salesman_console_ver
         }
         public void FindMinHamiltoncycle()
         {
-            Dictionary<long, Node> sorted_nodes = new Dictionary<long, Node>();
 
-
-
-            foreach (var p in Nodes) 
+            Dictionary<long, long> prioritised_nodes = new Dictionary<long, long>();
+            foreach (Node n in Nodes)
             {
-                Console.WriteLine(p.location + " " + p.sum_of_distances);
-                Console.WriteLine("  ***********************");
-                foreach (var item in p.distance) 
-                {
-                   
-                    Console.WriteLine(item.Key + "  = key ");
-                    Console.WriteLine(item.Value + "  = value ");
-
-
-                }
+                prioritised_nodes.Add(n.location, n.sum_of_distances);
 
 
             }
+            prioritised_nodes = prioritised_nodes.OrderByDescending(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+            int i = 0;
+            foreach (var entry in prioritised_nodes)
+            {
+                sorted_nodes[i] = Nodes[entry.Key];
+                i++;
+                
+            }
+            //Console.WriteLine(" un sorted ######");
+            //Array.ForEach<Node>(Nodes, p => Console.WriteLine(p.location + " " + p.sum_of_distances));
+            //Console.WriteLine("sorted ######");
+            //Array.ForEach<Node>(sorted_nodes, p => Console.WriteLine(p.location + " " + p.sum_of_distances));
+
+
+
 
 
             foreach (Node n in sorted_nodes)
@@ -319,12 +323,12 @@ namespace traveling_salesman_console_ver
                         //nodes[check ]is the other node to check
                         for (int index2 = 1; index2 <= Nodes[check].possible_edges; index2++)// min range 2 only increase if necessary
                         {
-                            Console.WriteLine("index " + n.index);
+                            //Console.WriteLine("index " + n.index);
 
                             
 
-                            long check2 = Nodes[check].distance.ElementAt(index2+1).Key;
-                            Console.WriteLine("node :" + n.location + " at check  : " + n.index + " goes to " + check + " node: " + check + " atcheck :" + index2 + " goes to " + check2);
+                            long check2 = Nodes[check].distance.ElementAt(index2).Key;
+                            //Console.WriteLine("node :" + n.location + " at check  : " + n.index + " goes to " + check + " node: " + check + " atcheck :" + index2 + " goes to " + check2);
                             bool notloop = true;
                             // prevents loop and keeps the cycle one edge missing
                             var f = n;
@@ -333,13 +337,13 @@ namespace traveling_salesman_console_ver
                             while (n.location == Nodes[check].distance.ElementAt(index2).Key && f != null)
                             {
 
-                                Console.WriteLine("f.location =" + f.location);
-                                Console.WriteLine("f prev =" + prev_f.location);
+                                //Console.WriteLine("f.location =" + f.location);
+                                //Console.WriteLine("f prev =" + prev_f.location);
                                 if (f.adj_1 == prev_f)
                                 {
                                     prev_f = f;
                                     f = f.adj_2;
-                                    Console.WriteLine("f.adj_1 == prev f");
+                                    //Console.WriteLine("f.adj_1 == prev f");
 
 
                                 }
@@ -347,7 +351,7 @@ namespace traveling_salesman_console_ver
                                 {
                                     prev_f = f;
                                     f = f.adj_1;
-                                    Console.WriteLine("f.adj_2 == prev f");
+                                    //Console.WriteLine("f.adj_2 == prev f");
                                 }
                                 if (f == null)
                                 {
@@ -363,15 +367,15 @@ namespace traveling_salesman_console_ver
 
                             if (n.location == Nodes[check].distance.ElementAt(index2).Key && Nodes[check].edges_found != 2 && notloop)
                             {
-                                Console.WriteLine("node1:" + check + " node2:" + check2 + "match");
+                                //Console.WriteLine("node1:" + check + " node2:" + check2 + "match");
                                 n.index++;
                                 Undirected_Edge temp = new Undirected_Edge(check, check2);
                                 Undirected_Edge e;
-                                var weight = Nodes[check2].distance[check];
-                                Console.WriteLine("id:" + temp.id);
+                               
+                                //Console.WriteLine("id:" + temp.id);
                                 
 
-                                Console.WriteLine("weight : " + weight);
+                                
                                 // below code prevents duplicates
                                 if (minimumHamiltonCycle.edges.Count == no_of_nodes - 1) // get up to only -1 edges are left
                                 {
@@ -383,7 +387,7 @@ namespace traveling_salesman_console_ver
                                 {
                                     minimumHamiltonCycle.edges.Add(temp.id, temp);
                                     n.edges_found += 1;
-                                    Console.WriteLine("node1:" + check+ " node2:" + n + "match");
+                                    //Console.WriteLine("node1:" + check+ " node2:" + n + "match");
                                     Nodes[check].edges_found += 1;
                                     // Console.WriteLine(n.edges_found + " edges found for node " + n.location + " and node " + Nodes[check].location);
                                     
