@@ -4,6 +4,8 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.IO;
+using System.Collections;
+
 namespace traveling_salesman_console_ver
 {
     public class completeGraph
@@ -11,7 +13,8 @@ namespace traveling_salesman_console_ver
         public long[,] distanceMatrix { get; set; }
         public static long no_of_nodes { get; set; }
         public static Node[] lastEdgeNodes = new Node[2];
-        static public Node[] Nodes; // use static to avoid duplication of nodes
+        static public Node[] Nodes;
+        public  Node[] sorted_nodes;// use static to avoid duplication of nodes
         // the constructor below is run when the class is created
         public completeGraph(long[,] data)
         {
@@ -66,6 +69,7 @@ namespace traveling_salesman_console_ver
             public Node adj_1;
             public Node adj_2;
             public int current_min_probable_edge_index = 1;
+            public int current_min_probable_edge_index2 = 2;
             public  long sum_of_distances;
             
             // dictionary to represent distance to different locations
@@ -123,7 +127,9 @@ namespace traveling_salesman_console_ver
             {
                 this.node1 = destination;
                 this.node2 = source;
+                
                 this.weight = Nodes[node2].distance[node1];
+                
                 this.Node1 = Nodes[node1];
                 this.Node2 = Nodes[node2];
                 if (node1 > node2)
@@ -199,6 +205,7 @@ namespace traveling_salesman_console_ver
                 Sort(temp);
                 Nodes[i] = temp;
             }
+            
         }
         // function to sort node distance data
         public void Sort(Node nm)
@@ -255,501 +262,41 @@ namespace traveling_salesman_console_ver
         
         
         }
-        public void FindMiHamiltoncycle()
-        {   while (minimumHamiltonCycle.edges.Count != no_of_nodes - 1) 
-            {
-                foreach (Node n in Nodes)
-                {
-                    Console.WriteLine("check node " + n.location);
 
-                    if (n.edges_found == 2)
-                    {
-                        //if both edges are found it wont do anything
-                        Console.WriteLine(" both edges found");
-
-                    }
-                    else
-                    {
-                        bool not_pass = true;
-                        while (not_pass && n.edges_found != 2)
-                        {
-                            long check = n.distance.ElementAt(n.current_min_probable_edge_index).Key;
-                            Console.WriteLine("node connected to current probable edge of node " + n.location + " = " + check);
-                            while(Nodes[check].edges_found==2) 
-                            {
-                                // test implement code to remove nodes which have found 2 edges from the sorted dictionary might be quicker?
-                                Console.WriteLine("trying to connect to a node with already 2 edges so update  ");
-                                n.current_min_probable_edge_index += 1;
-                                check = n.distance.ElementAt(n.current_min_probable_edge_index).Key;
-                                Console.WriteLine("node connected to current probable edge of node " + n.location + " = " + check);
-
-
-
-                            }
-                            var f = n;
-                            var prev_f = f;
-                            f = f.adj_1;
-                            // check for loop
-                            while (n.location == Nodes[check].distance.ElementAt(Nodes[check].current_min_probable_edge_index).Key && f != null)
-                            {
-
-                                Console.WriteLine("f.location =" + f.location);
-                                Console.WriteLine("f prev =" + prev_f.location);
-                                if (f.adj_1 == prev_f)
-                                {
-                                    prev_f = f;
-                                    f = f.adj_2;
-                                    //Console.WriteLine("f.adj_1 == prev f");
-
-
-                                }
-                                else if (f.adj_2 == prev_f)
-                                {
-                                    prev_f = f;
-                                    f = f.adj_1;
-                                    //Console.WriteLine("f.adj_2 == prev f");
-                                }
-                                if (f == null)
-                                {
-
-                                    break;
-
-                                }
-                                if (f.location == check)
-                                {
-                                    Console.WriteLine("loops so update possible edge and update checked node");
-                                    n.current_min_probable_edge_index += 1;
-                                    Nodes[check].current_min_probable_edge_index += 1;
-                                    check = n.distance.ElementAt(n.current_min_probable_edge_index).Key;
-
-                                }
-                            }
-
-                            if (n.location == Nodes[check].distance.ElementAt(Nodes[check].current_min_probable_edge_index).Key)
-                            {
-
-
-
-
-                                //Console.WriteLine("match in nodes " + n.location + "and" + Nodes[check].location);
-                                Undirected_Edge temp = new Undirected_Edge(n.location, Nodes[check].location);
-                                Undirected_Edge e;
-                                
-                             
-                                if (minimumHamiltonCycle.edges.TryGetValue(temp.id, out e))
-                                { }
-                                else
-                                {
-                                    minimumHamiltonCycle.edges.Add(temp.id, temp);
-                                    n.edges_found += 1;
-                                    Nodes[check].edges_found += 1;
-                                    n.current_min_probable_edge_index += 1;
-                                    Nodes[check].current_min_probable_edge_index += 1;
-                                    //Console.WriteLine(n.edges_found + " edges found for node " + n.location + " and " + Nodes[check].edges_found + " edges found for node " + Nodes[check].location);
-                                    add_adjacent_node(n, Nodes[check]);
-                                    //Console.WriteLine("adjacent node " + n.location + " is " + Nodes[check].location);
-                                    
-                                }
-                                //Console.WriteLine("no of edges found = " + minimumHamiltonCycle.edges.Count);
-                                if (minimumHamiltonCycle.edges.Count == no_of_nodes - 1) // get up to only -1 edges are left
-                                {
-                                    return;
-                                }
-
-                            }
-                            else
-                            {
-                                not_pass = false;
-
-                            }
-                        }
-
-
-                    }
-
-                }
-            }
-            
-
-        }
         public void based_on_priority() 
+        class NodeComparer : IComparer
         {
-            
-            
-            Dictionary<long, long> prioritised_nodes = new Dictionary<long, long>();
-            foreach (Node n in Nodes)
+            public int Compare(object x, object y)
             {
-                prioritised_nodes.Add(n.location, n.sum_of_distances);
-
-
+                return -(new CaseInsensitiveComparer()).Compare(((Node)x).sum_of_distances, ((Node)y).sum_of_distances);
             }
-            bool is_odd_no_of_nodes;
-            Console.WriteLine(no_of_nodes);
-            float mod = (float)no_of_nodes / 2;
-            // since we start from 0 minus one from mod to get center 
-            mod = mod - 1;
-            
-            
-            Console.WriteLine("half is " + mod);
-            if (no_of_nodes % 2 == 0) 
-            {
-                
-                Console.WriteLine("is even");
-                is_odd_no_of_nodes = false;
-            }
-            else 
-            {
-
-                is_odd_no_of_nodes = true;
-                Console.WriteLine("is odd");
-            
-            }
-
-            // sort Nodes based on priority sum of all edges hiher value is higher priority
-           
-            prioritised_nodes = prioritised_nodes.OrderByDescending(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
-            foreach(var entry in prioritised_nodes) 
-            {
-                Console.WriteLine(entry.Value);
-                Console.WriteLine(entry.Key);
-            }
-           
-            for (int i = 0; i<=mod;i++) 
-            {
-                var a = prioritised_nodes.ElementAt(i).Key;
-                var node1 = Nodes[a];
-                Console.WriteLine(" node = " + node1.location);
-                Node node1_adj;
-                long check;
-                if (node1.edges_found == 2)
-                {
-
-                }
-                
-                else 
-                {
-                    int no_edges_to_find_in_first_half = 2;
-                    if (is_odd_no_of_nodes && i == mod - 0.5)
-                    {
-                        no_edges_to_find_in_first_half = 1;
-
-                    }
-                    if (!is_odd_no_of_nodes && i == mod )
-                    {
-                        Console.WriteLine("at this point only 1 edge");
-                        Console.WriteLine(" node = " + node1.location +" edges = " + node1.edges_found);
-                        no_edges_to_find_in_first_half = 1;
-
-                    }
-
-                    while (node1.edges_found != no_edges_to_find_in_first_half)
-                    {
-                        
-                        check = node1.distance.ElementAt(node1.current_min_probable_edge_index).Key;
-                        node1_adj = Nodes[check];
-                        Console.WriteLine("nodes picked are node : " + node1.location + " and node : " + node1_adj.location);
-                        Console.WriteLine("edges found " + node1.edges_found);
-                        while (node1_adj.edges_found == 2)
-                        {
-
-                            node1.current_min_probable_edge_index += 1;
-                            Console.WriteLine("2 edges already there will lopp so updating");
-                            check = node1.distance.ElementAt(node1.current_min_probable_edge_index).Key;
-                            node1_adj = Nodes[check];
-                            Console.WriteLine(" new nodes picked are node : " + node1.location + " and node : " + node1_adj.location);
-
-
-
-
-
-                        }
-
-                        var f = node1;
-                        var prev_f = f;
-                        f = f.adj_1;
-                        while (f != null )
-                        {
-                            //Console.WriteLine("f.location =" + f.location);
-                            //Console.WriteLine("f prev =" + prev_f.location);
-                            while (node1_adj.edges_found == 2)
-                            {
-
-                                node1.current_min_probable_edge_index += 1;
-                                Console.WriteLine("2 edges already there will lopp so updating");
-                                check = node1.distance.ElementAt(node1.current_min_probable_edge_index).Key;
-                                node1_adj = Nodes[check];
-                                Console.WriteLine(" new nodes picked are node : " + node1.location + " and node : " + node1_adj.location);
-
-
-
-
-
-                            }
-
-
-
-                            if (f.adj_1 == prev_f)
-                            {
-                                prev_f = f;
-                                f = f.adj_2;
-                                //Console.WriteLine("f.adj_1 == prev f");
-
-
-                            }
-                            else if (f.adj_2 == prev_f)
-                            {
-                                prev_f = f;
-                                f = f.adj_1;
-                                //Console.WriteLine("f.adj_2 == prev f");
-                            }
-                            if (f == null)
-                            {
-                                Console.WriteLine("f is null escaping loop");
-                                break;
-
-                            }
-                            if (f.location == node1_adj.location )
-                            {
-                                Console.WriteLine("loops so update possible edge and update checked node");
-                                node1.current_min_probable_edge_index += 1;
-
-                                check = node1.distance.ElementAt(node1.current_min_probable_edge_index).Key;
-                                node1_adj = Nodes[check];
-                                Console.WriteLine(" new nodes picked are node : " + node1.location + " and node : " + node1_adj.location);
-
-                            }
-
-
-                        }
-                        Undirected_Edge temp = new Undirected_Edge(node1.location, node1_adj.location);
-                        Undirected_Edge e;
-                        if (minimumHamiltonCycle.edges.TryGetValue(temp.id, out e))
-                        {
-                            //Console.WriteLine("edge already added");
-                            node1.current_min_probable_edge_index += 1;
-                            check = node1.distance.ElementAt(node1.current_min_probable_edge_index).Key;
-                            node1_adj = Nodes[check];
-                            Console.WriteLine(" new nodes picked are node : " + node1.location + " and node : " + node1_adj.location);
-                        }
-                        else
-                        {
-                            minimumHamiltonCycle.edges.Add(temp.id, temp);
-                            node1.edges_found += 1;
-                            node1_adj.edges_found += 1;
-                            node1.current_min_probable_edge_index += 1;
-                            if (node1_adj.distance.ElementAt(node1_adj.current_min_probable_edge_index).Key == node1.location)
-                            {
-                                node1_adj.current_min_probable_edge_index += 1;
-
-                            }
-                            if (minimumHamiltonCycle.edges.Count == no_of_nodes - 1) // get up to only -1 edges are left
-                            {
-                                return;
-                            }
-                            Console.WriteLine(node1.edges_found + " edges found for node " + node1.location + " and " + node1_adj.edges_found + " edges found for node " + node1_adj.location);
-                            add_adjacent_node(node1, node1_adj);
-
-
-                        }
-
-                    }
-                }
-
-
-            }
-            int no_of_edges_to_find = 1;
-            
-            Node pivot = Nodes[1];
-            // half done now from bottom up
-            Console.WriteLine("******************* part 2 start *************");
-            Console.WriteLine("mod " + mod);
-            
-            foreach(var entry in prioritised_nodes) 
-            {
-                //Console.WriteLine(Nodes[entry.Key].edges_found + " edges found for node " + entry.Key);
-                if (Nodes[entry.Key].edges_found == 0) 
-                {
-                    
-                    Console.WriteLine("highest no edges found at node " + entry.Key);
-;                   pivot = Nodes[entry.Key];
-                    break;
-                
-                }
-            
-            
-            }
-            while (minimumHamiltonCycle.edges.Count != no_of_nodes - 1)// get up to only -1 edges are left
-            {
-                for (int i = (int)no_of_nodes - 1; i >= mod ; i--)
-                {
-                    var a = prioritised_nodes.ElementAt(i).Key;
-                    var node1 = Nodes[a];
-                    Console.WriteLine(" node = " + node1.location);
-                    Console.WriteLine(" node edges found  " + node1.edges_found);
-                    Node node1_adj;
-                    Console.WriteLine("pivot is " + pivot.location);
-                    long check;
-
-                    
-                   
-                    if (node1.edges_found == 2)
-                    {
-
-
-                    }
-                    else
-                    {
-                        if(!is_odd_no_of_nodes &&  node1.location == pivot.location) 
-                        {
-                            no_of_edges_to_find = 2;
-                            i = (int)no_of_nodes;
-
-                        }
-
-
-                        if (is_odd_no_of_nodes && node1.edges_found == 0 && node1.location == pivot.location )
-                        {
-                            no_of_edges_to_find = 2;
-                            i = (int)no_of_nodes;
-
-
-
-                        }
-                        while (node1.edges_found != no_of_edges_to_find)
-                        {
-                            if (node1.edges_found == 2)
-                            {
-                                break;
-
-                            }
-
-                            check = node1.distance.ElementAt(node1.current_min_probable_edge_index).Key;
-                            node1_adj = Nodes[check];
-                            Console.WriteLine("nodes picked are node : " + node1.location + " and node : " + node1_adj.location);
-                            Console.WriteLine("edges found " + node1.edges_found);
-                            while (node1_adj.edges_found == 2)
-                            {
-
-                                node1.current_min_probable_edge_index += 1;
-                                Console.WriteLine("2 edges already there will lopp so updating");
-                                check = node1.distance.ElementAt(node1.current_min_probable_edge_index).Key;
-                                node1_adj = Nodes[check];
-                                Console.WriteLine(" new nodes picked are node : " + node1.location + " and node : " + node1_adj.location);
-
-
-
-
-
-                            }
-                            var f = node1;
-                            var prev_f = f;
-                            f = f.adj_1;
-
-                            while (f != null)
-                            {
-                                //Console.WriteLine("f.location =" + f.location);
-                               // Console.WriteLine("f prev =" + prev_f.location);
-                                while (node1_adj.edges_found == 2)
-                                {
-
-                                    node1.current_min_probable_edge_index += 1;
-                                    Console.WriteLine("2 edges already there will lopp so updating");
-                                    check = node1.distance.ElementAt(node1.current_min_probable_edge_index).Key;
-                                    node1_adj = Nodes[check];
-
-
-
-
-                                }
-
-                                if (f.adj_1 == prev_f)
-                                {
-                                    prev_f = f;
-                                    f = f.adj_2;
-                                    //Console.WriteLine("f.adj_1 == prev f");
-
-
-                                }
-                                else if (f.adj_2 == prev_f)
-                                {
-                                    prev_f = f;
-                                    f = f.adj_1;
-                                    //Console.WriteLine("f.adj_2 == prev f");
-                                }
-                                if (f == null)
-                                {
-                                    //Console.WriteLine("f is null escaping loop");
-                                    break;
-
-                                }
-                                if (f.location == node1_adj.location)
-                                {
-                                    Console.WriteLine("loops so update possible edge and update checked node");
-                                    node1.current_min_probable_edge_index += 1;
-
-                                    check = node1.distance.ElementAt(node1.current_min_probable_edge_index).Key;
-                                    node1_adj = Nodes[check];
-                                    Console.WriteLine(" new nodes picked are node : " + node1.location + " and node : " + node1_adj.location);
-
-                                }
-
-
-                            }
-                            Undirected_Edge temp = new Undirected_Edge(node1.location, node1_adj.location);
-                            Undirected_Edge e;
-                            if (minimumHamiltonCycle.edges.TryGetValue(temp.id, out e))
-                            {
-                                Console.WriteLine("edge already added");
-                                node1.current_min_probable_edge_index += 1;
-                                check = node1.distance.ElementAt(node1.current_min_probable_edge_index).Key;
-                                node1_adj = Nodes[check];
-                                Console.WriteLine(" new nodes picked are node : " + node1.location + " and node : " + node1_adj.location);
-                            }
-                            else
-                            {
-                                minimumHamiltonCycle.edges.Add(temp.id, temp);
-                                node1.edges_found += 1;
-                                node1_adj.edges_found += 1;
-                                node1.current_min_probable_edge_index += 1;
-                                if (node1_adj.distance.ElementAt(node1_adj.current_min_probable_edge_index).Key == node1.location)
-                                {
-                                    node1_adj.current_min_probable_edge_index += 1;
-
-                                }
-                                if (minimumHamiltonCycle.edges.Count == no_of_nodes - 1) // get up to only -1 edges are left
-                                {
-                                    return;
-                                }
-                                Console.WriteLine(node1.edges_found + " edges found for node " + node1.location + " and " + node1_adj.edges_found + " edges found for node " + node1_adj.location);
-                                add_adjacent_node(node1, node1_adj);
-
-
-                            }
-
-
-                        }
-                    }
-
-                }
-
-            }
-           
-            
-                
-               
-           
-            
-            
-
-
-
         }
-     
-
         public void FindMinHamiltoncycle()
         {
-            foreach (Node n in Nodes)
+            Dictionary<long, Node> sorted_nodes = new Dictionary<long, Node>();
+
+
+
+            foreach (var p in Nodes) 
             {
+                Console.WriteLine(p.location + " " + p.sum_of_distances);
+                Console.WriteLine("  ***********************");
+                foreach (var item in p.distance) 
+                {
+                   
+                    Console.WriteLine(item.Key + "  = key ");
+                    Console.WriteLine(item.Value + "  = value ");
+
+
+                }
+
+
+            }
+
+
+            foreach (Node n in sorted_nodes)
+            {
+
                 //Console.WriteLine("check node " + n.location);
                 //Console.WriteLine("possible edges" + n.possible_edges);
                 //Console.WriteLine("edges found " + n.edges_found);
@@ -774,9 +321,9 @@ namespace traveling_salesman_console_ver
                         {
                             Console.WriteLine("index " + n.index);
 
-
                             
-                            long check2 = Nodes[check].distance.ElementAt(index2).Key;
+
+                            long check2 = Nodes[check].distance.ElementAt(index2+1).Key;
                             Console.WriteLine("node :" + n.location + " at check  : " + n.index + " goes to " + check + " node: " + check + " atcheck :" + index2 + " goes to " + check2);
                             bool notloop = true;
                             // prevents loop and keeps the cycle one edge missing
@@ -820,7 +367,11 @@ namespace traveling_salesman_console_ver
                                 n.index++;
                                 Undirected_Edge temp = new Undirected_Edge(check, check2);
                                 Undirected_Edge e;
-                                //Console.WriteLine("id:" + ed.id);
+                                var weight = Nodes[check2].distance[check];
+                                Console.WriteLine("id:" + temp.id);
+                                
+
+                                Console.WriteLine("weight : " + weight);
                                 // below code prevents duplicates
                                 if (minimumHamiltonCycle.edges.Count == no_of_nodes - 1) // get up to only -1 edges are left
                                 {
@@ -832,6 +383,7 @@ namespace traveling_salesman_console_ver
                                 {
                                     minimumHamiltonCycle.edges.Add(temp.id, temp);
                                     n.edges_found += 1;
+                                    Console.WriteLine("node1:" + check+ " node2:" + n + "match");
                                     Nodes[check].edges_found += 1;
                                     // Console.WriteLine(n.edges_found + " edges found for node " + n.location + " and node " + Nodes[check].location);
                                     
@@ -974,6 +526,7 @@ namespace traveling_salesman_console_ver
             {
                 Console.WriteLine(e.id);
                 Console.WriteLine(e.weight);
+
             }
         }
         public void printLastEdgeArbitaryPath()
