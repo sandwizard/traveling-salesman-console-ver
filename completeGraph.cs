@@ -206,7 +206,22 @@ namespace traveling_salesman_console_ver
                 Sort(temp);
                 Nodes[i] = temp;
             }
-            
+            Dictionary<long, long> prioritised_nodes = new Dictionary<long, long>();
+            foreach (Node n in Nodes)
+            {
+                prioritised_nodes.Add(n.location, n.sum_of_distances);
+
+
+            }
+            //Console.WriteLine("not overflowing here");
+            prioritised_nodes = prioritised_nodes.OrderByDescending(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+            int k = 0;
+            foreach (var entry in prioritised_nodes)
+            {
+                sorted_nodes[k] = Nodes[entry.Key];
+                k++;
+
+            }
         }
         // function to sort node distance data
         public void Sort(Node nm)
@@ -274,21 +289,7 @@ namespace traveling_salesman_console_ver
         public void FindMinHamiltoncycle()
         {
 
-            Dictionary<long, long> prioritised_nodes = new Dictionary<long, long>();
-            foreach (Node n in Nodes)
-            {
-                prioritised_nodes.Add(n.location, n.sum_of_distances);
-
-
-            }
-            prioritised_nodes = prioritised_nodes.OrderByDescending(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
-            int i = 0;
-            foreach (var entry in prioritised_nodes)
-            {
-                sorted_nodes[i] = Nodes[entry.Key];
-                i++;
-                
-            }
+            
             //Console.WriteLine(" un sorted ######");
             //Array.ForEach<Node>(Nodes, p => Console.WriteLine(p.location + " " + p.sum_of_distances));
             //Console.WriteLine("sorted ######");
@@ -313,11 +314,7 @@ namespace traveling_salesman_console_ver
                     while (n.index <= n.possible_edges)
                     {
 
-                        foreach (var item in n.distance)
-                        {
-                            //Console.WriteLine("[node distance] : " + item);
-
-                        }
+                      
                         long check = n.distance.ElementAt(n.index).Key;
                         
                         //nodes[check ]is the other node to check
@@ -387,7 +384,7 @@ namespace traveling_salesman_console_ver
                                 {
                                     minimumHamiltonCycle.edges.Add(temp.id, temp);
                                     n.edges_found += 1;
-                                    //Console.WriteLine("node1:" + check+ " node2:" + n + "match");
+                                    //Console.WriteLine("node1:" + check+ " node2:" + n.location + "match");
                                     Nodes[check].edges_found += 1;
                                     // Console.WriteLine(n.edges_found + " edges found for node " + n.location + " and node " + Nodes[check].location);
                                     
@@ -425,6 +422,10 @@ namespace traveling_salesman_console_ver
                 if (n.edges_found != 2)
                 {
                     n.possible_edges += 1;
+                }
+                if (n.edges_found == 2)
+                {
+                    n.possible_edges = 0;
                 }
             }
             if (minimumHamiltonCycle.edges.Count < no_of_nodes - 1)

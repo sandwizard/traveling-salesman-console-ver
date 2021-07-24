@@ -1,5 +1,5 @@
-# traveling-salesman-console-ver
-an fast  algorith to solve traveling salesman relatively close to optimal solution.
+# quick aproximation algorith for Traveling sales man pproblem
+an fast  algorith to solve traveling salesman with apronimation around 1.1 - 1.26 
 
 link to test data:
 https://www.math.uwaterloo.ca/tsp/data/index.html
