@@ -41,8 +41,8 @@ namespace traveling_salesman_console_ver
             Nodes = new Node[no_of_nodes];
             sorted_nodes = new Node[no_of_nodes];
             Initialise_nodes();
-            FindApproxHamiltoncycle();
-            lastedge();
+            //FindApproxHamiltoncycle();
+            //lastedge();
           
         }
         public class shortestpath
@@ -298,6 +298,7 @@ namespace traveling_salesman_console_ver
 
             public void loop_test_2( Node nc1, Node nc2)
             {
+
                 Node n;
                 nc1= Nodes[nc1.id];
                 nc2 = Nodes[nc2.id];
@@ -692,7 +693,7 @@ namespace traveling_salesman_console_ver
                 }
             }
         }
-        public Hamilton_cycle minimumHamiltonCycle = new Hamilton_cycle();
+        //public Hamilton_cycle minimumHamiltonCycle = new Hamilton_cycle();
         /// <summary>
         /// returns the weight of the edge of two nodes n1 and n2
         /// </summary>
@@ -898,14 +899,14 @@ namespace traveling_salesman_console_ver
 
         // if no check confirm found cut in half sum priorities and pik edge of higher priority
 
-        public void printMinHamiltonPath()
-        {
-            foreach (KeyValuePair<string, Undirected_Edge> item in minimumHamiltonCycle.edges)
-            {
-                Console.WriteLine("node: " + item.Key);
-                Console.WriteLine(" weight:" + item.Value.weight);
-            }
-        }
+        //public void printMinHamiltonPath()
+        //{
+        //    foreach (KeyValuePair<string, Undirected_Edge> item in minimumHamiltonCycle.edges)
+        //    {
+        //        Console.WriteLine("node: " + item.Key);
+        //        Console.WriteLine(" weight:" + item.Value.weight);
+        //    }
+        //}
 
         public Hamilton_cycle MinimumHamiltonCycle = new Hamilton_cycle();// aprox
         /// <summary>
@@ -960,8 +961,8 @@ namespace traveling_salesman_console_ver
             // remove candidate since edge is added 
             
                                   
-            // initially will always search left
-            minimumHamiltonCycle.searchleft = true;
+            // initially will always search right
+            minimumHamiltonCycle.searchleft = false;
             minimumHamiltonCycle.calculate_lr_priorities();
 
             Console.WriteLine("l priority is " + minimumHamiltonCycle.left_arm_priority);

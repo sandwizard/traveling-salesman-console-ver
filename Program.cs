@@ -116,7 +116,7 @@ namespace traveling_salesman_console_ver
             }
             //GenerateGraph graph = new GenerateGraph(1979);
             GenerateGraph graph = new GenerateGraph();
-            graph.from_tsp_data("D:/Work/Github/Repo/qa194.tsp");
+            graph.from_tsp_data("D:/Work/Github/Repo/dj38.tsp");
             //for (int i = 0; i < graph.coordinate_graph.GetLength(0); i++)
             //{
             //    for (int j = 0; j < graph.coordinate_graph.GetLength(1); j++)
@@ -136,14 +136,14 @@ namespace traveling_salesman_console_ver
 
             Console.WriteLine("start now");
             completeGraph.Hamilton_cycle minimum_cycle = new completeGraph.Hamilton_cycle();
-            completeGraph c = new completeGraph(graph.distance_matrix);
-            //minimum_cycle = c.FindMinHamiltonCycle();
-           // c.printHamiltonCycle(minimum_cycle);
+            completeGraph c = new completeGraph(DistanceMIn);
+            minimum_cycle = c.FindMinHamiltonCycle();
+            c.printHamiltonCycle(minimum_cycle);
             //Console.WriteLine("end now");
-            c.printMinHamiltonPath();
-            c.store_cycle();
+            //c.printMinHamiltonPath();
+           // c.store_cycle();
             minimum_cycle.totalweight();
-            c.printLastEdgeArbitaryPath();
+            //c.printLastEdgeArbitaryPath();
 
 
         }
