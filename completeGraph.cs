@@ -287,7 +287,8 @@ namespace traveling_salesman_console_ver
                 this.id = local;
                 this.distance = new Dictionary<long, long>(dic);
                 this.edges_found = 0;
-                this.sum_of_distances = distance.Skip(0).Sum(v => v.Value); 
+                this.sum_of_distances = distance.Skip(0).Sum(v => v.Value);
+                this.priority = sum_of_distances;
                 //Console.WriteLine("sum for node :" + this.location + " =  " + sum_of_distances);
             }
 

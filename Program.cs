@@ -190,7 +190,7 @@ namespace traveling_salesman_console_ver
 
             Console.WriteLine("start now");
             completeGraph.Hamilton_cycle minimum_cycle = new completeGraph.Hamilton_cycle();
-            completeGraph c = new completeGraph(DistanceMu);
+            completeGraph c = new completeGraph(DistanceMIn);
             minimum_cycle = c.FindMinHamiltonCycle();
             minimum_cycle.printHamiltonCycle();
             minimum_cycle.totalweight();
