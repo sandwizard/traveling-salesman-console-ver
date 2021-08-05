@@ -25,13 +25,11 @@ namespace traveling_salesman_console_ver
             Nodes = new Node[no_of_nodes];
             sorted_nodes = new Node[no_of_nodes];
             Initialise_nodes();
-<<<<<<< Updated upstream
+
             FindMinHamiltoncycle();
             //based_on_priority();
             lastedge();
-=======
-          
->>>>>>> Stashed changes
+
         }
         public Node future(Node n)
         {
@@ -51,7 +49,7 @@ namespace traveling_salesman_console_ver
 
         public class Node
         {
-<<<<<<< Updated upstream
+
             public long location;
             public int edges_found;
             public int possible_edges;
@@ -64,7 +62,7 @@ namespace traveling_salesman_console_ver
             
             // dictionary to represent distance to different locations
             public Dictionary<long, long> distance;
-=======
+
             public Dictionary<long, long> distance;
             // dictionary to represent candidate set
             public Dictionary<long, long> candidate_set;
@@ -254,7 +252,7 @@ namespace traveling_salesman_console_ver
             }
             // dictionary to represent distance to different locations
 
->>>>>>> Stashed changes
+
             //node constructor
             
             public Node(long local, Dictionary<long, long> dic)
@@ -265,8 +263,7 @@ namespace traveling_salesman_console_ver
                 this.sum_of_distances = distance.Skip(0).Sum(v => v.Value); 
                 //Console.WriteLine("sum for node :" + this.location + " =  " + sum_of_distances);
             }
-<<<<<<< Updated upstream
-=======
+
             /// <summary>
             /// set candidate 1 of node to candidate
             /// </summary>
@@ -280,12 +277,11 @@ namespace traveling_salesman_console_ver
         static public long Getdistance(long from, long to)
         {
             return distanceMatrix[from, to];
->>>>>>> Stashed changes
+
         }
         public class Hamilton_cycle
         {
-<<<<<<< Updated upstream
-=======
+
             public Node left_coner_node;
             public Node genesisNode;
             public bool match_left;
@@ -314,7 +310,7 @@ namespace traveling_salesman_console_ver
 
 
          
->>>>>>> Stashed changes
+
             public Dictionary<string, Undirected_Edge> edges;
             public long totalweight()
             {
@@ -322,8 +318,7 @@ namespace traveling_salesman_console_ver
                 Console.WriteLine("total weight" + total);
                 return total;
             }
-<<<<<<< Updated upstream
-=======
+
             /// <summary>
             /// prints the edges of given hamiltoncycle h
             /// </summary>
@@ -336,14 +331,12 @@ namespace traveling_salesman_console_ver
                     Console.WriteLine(" weight:" + item.Value.weight);
                 }
             }
->>>>>>> Stashed changes
+
             public Hamilton_cycle()
             {
                 edges = new Dictionary<string, Undirected_Edge>();
 
             }
-<<<<<<< Updated upstream
-=======
 
 
             /// <summary>
@@ -513,26 +506,26 @@ namespace traveling_salesman_console_ver
 
                 }
             }
->>>>>>> Stashed changes
+
         }
         public Hamilton_cycle minimumHamiltonCycle = new Hamilton_cycle();
         public class Undirected_Edge
         {
-<<<<<<< Updated upstream
+
             public Node Node1;
             public Node Node2;
             public long node1;
             public long node2;
-=======
+
             public Node ln;
             public Node rn;
             public Node left_Node;
             public Node right_Node;
->>>>>>> Stashed changes
+
             public long weight;
             public string id;           
             long temp;
-<<<<<<< Updated upstream
+
             public shortestpath arbitarypath;
             public Undirected_Edge() { }
             public Undirected_Edge(Node n1, Node n2)
@@ -559,7 +552,7 @@ namespace traveling_salesman_console_ver
                 }
                 // gives a uniquie id concatenation of smallest value node and highest value node
                 this.id = string.Format("{0}:{1}", node1, node2);
-=======
+
 
             public Undirected_Edge() { }
             public Undirected_Edge(Node ln, Node rn)
@@ -575,7 +568,7 @@ namespace traveling_salesman_console_ver
                
                 // gives a uniquie id concatenation of smallest value node and highest value node
                 this.id = string.Format("{0} :{1}", left_Node.id, right_Node.id);
->>>>>>> Stashed changes
+
             }
         }
 
@@ -597,18 +590,13 @@ namespace traveling_salesman_console_ver
             {
             }
         }
-<<<<<<< Updated upstream
-        // methods
-        // function to get the distance between two nodes 
+
         public long Getdistance(long from, long to)
         {
             return distanceMatrix[from, to];
         }
-=======
 
-      
->>>>>>> Stashed changes
-        // function to check if given data is valid graph
+
         public bool isValidCompleteGraph(long[,] graph)
         {
             long no_of_rows = graph.GetLength(0);
@@ -700,9 +688,6 @@ namespace traveling_salesman_console_ver
                 }
             }
         }
-<<<<<<< Updated upstream
-        // function to finde edged till last max value edge for whic we can yse a shortest path for arbitary path
-        // find a wway to make thee checking of minn vaklue edge on nodes ascnchronous
 
         public void add_adjacent_node(Node n1, Node n2)
         {
@@ -738,7 +723,6 @@ namespace traveling_salesman_console_ver
         
         
         }
-=======
 
 
 
