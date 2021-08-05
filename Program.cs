@@ -171,25 +171,12 @@ namespace traveling_salesman_console_ver
             //}
 
             Console.WriteLine("start now");
-<<<<<<< Updated upstream
             completeGraph c = new completeGraph(graph.distance_matrix);
             //Console.WriteLine("end now");
             c.printMinHamiltonPath();
             c.store_cycle();
             c.minimumHamiltonCycle.totalweight();
             c.printLastEdgeArbitaryPath();
-=======
-            completeGraph.Hamilton_cycle minimum_cycle = new completeGraph.Hamilton_cycle();
-            completeGraph c = new completeGraph(DistanceMIn);
-            minimum_cycle = c.FindMinHamiltonCycle();
-            minimum_cycle.printHamiltonCycle();
-            minimum_cycle.totalweight();
-            //Console.WriteLine("end now");
-            //c.printMinHamiltonPath();
-           // c.store_cycle();
-            
-            //c.printLastEdgeArbitaryPath();
->>>>>>> Stashed changes
 
 
         }
