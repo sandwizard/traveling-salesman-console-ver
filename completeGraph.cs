@@ -496,6 +496,15 @@ namespace traveling_salesman_console_ver
                     e.right_Node.edges_found += 1;
                     e.left_Node.candidate_set.Remove(e.right_Node.id);
                     e.right_Node.candidate_set.Remove(e.left_Node.id);
+                    if(this.left_coner_node.id == e.right_Node.id) 
+                    {
+                        this.left_coner_node = Nodes[e.left_Node.id];
+                    
+                    }
+                    if(this.right_coner_node.id == e.left_Node.id)
+                    {
+                        this.right_coner_node = Nodes[e.left_Node.id];
+                    }
                     // update conors
                     if(e.right_Node.id == this.left_coner_node.id) 
                     {
@@ -770,12 +779,12 @@ namespace traveling_salesman_console_ver
                     // calculate half point 
 
                     // before half point is reached
-                    //if (minimumHamiltonCycle.edges.Count >= half_point)
+                    //if (minimumhamiltoncycle.edges.count >= half_point)
                     //{
                     //    // swap prio 
-                    //    var temp = minimumHamiltonCycle.left_arm_priority;
-                    //    minimumHamiltonCycle.left_arm_priority = minimumHamiltonCycle.right_arm_priority;
-                    //    minimumHamiltonCycle.right_arm_priority = temp;
+                    //    var temp = minimumhamiltoncycle.left_arm_priority;
+                    //    minimumhamiltoncycle.left_arm_priority = minimumhamiltoncycle.right_arm_priority;
+                    //    minimumhamiltoncycle.right_arm_priority = temp;
 
                     //}
 
