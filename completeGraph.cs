@@ -124,6 +124,20 @@ namespace traveling_salesman_console_ver
                 Node fc = Nodes[this.candidate_set.ElementAt(1).Key];
                 if (this.has_duplicates) 
                 {
+                    if(this.candidate_set.Count == 2) 
+                    {
+                        fc = fc = Nodes[this.candidate_set.ElementAt(1).Key];
+                        Node fc2 = fc = Nodes[this.candidate_set.ElementAt(0).Key];
+                        if(fc.priority >= fc2.priority) 
+                        {
+                            return fc;
+                        }
+                        else 
+                        {
+                            return fc2;
+                        }
+
+                    }
                     fc = Nodes[this.candidate_set.ElementAt(1).Key];
                     long c1_priority = this.candidate_1().priority;
                     var edge_weight = this.candidate_set.ElementAt(0).Value;
@@ -377,6 +391,11 @@ namespace traveling_salesman_console_ver
                 
 
             }
+            /// <summary>
+            /// find distance traveler travels traveled left and right respectively
+            /// </summary>
+            /// <param name="optional_left"></param>
+            /// <param name="optional_right"></param>
             public void calculate_lr_priorities_with_weights()                
             {
                 Node left_c = this.left_coner_node.c1;
@@ -407,75 +426,77 @@ namespace traveling_salesman_console_ver
                     // loop and add edge weights till cutoff
                     Node current_left_hop = Nodes[this.left_coner_node.id];
                     Node current_right_hop = Nodes[this.right_coner_node.id];
-                   
+                    //Console.WriteLine("left p is " + left_arm_priority);
+                    //Console.WriteLine("right pis " + right_arm_priority);
+
                     Console.WriteLine("cutoff is " + cutoff);
 
                     for (int i = 0; i <cutoff; i++) 
                     {
-                        Console.WriteLine("current right hop is " + current_right_hop.id);
-                        Console.WriteLine("current left hop is " + current_left_hop.id);
+                        //Console.WriteLine("current right hop is " + current_right_hop.id);
+                        //Console.WriteLine("current left hop is " + current_left_hop.id);
 
+                       // Console.WriteLine("left p is {0} + {1} " ,left_arm_priority ,current_left_hop.right_edge.weight);
+                        //Console.WriteLine("right p is {0} + {1} " ,right_arm_priority, current_right_hop.left_edge.weight);
                         this.left_arm_priority += current_left_hop.right_edge.weight;
                         current_left_hop = current_left_hop.right_edge.right_Node;
                         this.right_arm_priority += current_right_hop.left_edge.weight;
                         current_right_hop = current_right_hop.left_edge.left_Node;
-                        Console.WriteLine("left p is " + left_arm_priority);
-                        Console.WriteLine("right pis " + right_arm_priority);
-
+                   
 
                     }
                     // if edges found is greater than one
                 }
-                if (this.left_coner_node.has_duplicates) 
-                {
-                    Console.WriteLine("has dups pis" );
-                    var edge_weight = this.left_coner_node.candidate_set.ElementAt(0).Value;
-                    var comp_weight = this.left_coner_node.candidate_set.ElementAt(1).Value;
-                    int count = 1;
-                    this.left_arm_priority -= edge_weight;
-                    while (edge_weight == comp_weight) 
-                    {
+                //if (this.left_coner_node.has_duplicates) 
+                //{
+                //    //Console.WriteLine("has dups pis" );
+                //    var edge_weight = this.left_coner_node.candidate_set.ElementAt(0).Value;
+                //    var comp_weight = this.left_coner_node.candidate_set.ElementAt(1).Value;
+                //    int count = 1;
+                //    this.left_arm_priority -= edge_weight;
+                //    while (edge_weight == comp_weight) 
+                //    {
                         
-                        try 
-                        {   
+                //        try 
+                //        {   
                             
-                            comp_weight = this.left_coner_node.candidate_set.ElementAt(count).Value;
-                        }
-                        catch (System.ArgumentOutOfRangeException) 
-                        {
-                            break;
+                //            comp_weight = this.left_coner_node.candidate_set.ElementAt(count).Value;
+                //        }
+                //        catch (System.ArgumentOutOfRangeException) 
+                //        {
+                //            break;
                         
-                        }
-                        this.left_arm_priority += edge_weight;
-                        count++;
-                    }
+                //        }
+                //        this.left_arm_priority += edge_weight;
+                //        count++;
+                //    }
 
-                }
-                if (this.right_coner_node.has_duplicates)
-                {
-                    Console.WriteLine("has dups pis");
-                    var edge_weight = this.right_coner_node.candidate_set.ElementAt(0).Value;
-                    var comp_weight = this.right_coner_node.candidate_set.ElementAt(1).Value;
-                    int count = 1;
-                    this.right_arm_priority -= edge_weight;
-                    while (edge_weight == comp_weight)
-                    {
+                //}
+                //if (this.right_coner_node.has_duplicates)
+                //{
+                //    //Console.WriteLine("has dups pis");
+                //    var edge_weight = this.right_coner_node.candidate_set.ElementAt(0).Value;
+                //    var comp_weight = this.right_coner_node.candidate_set.ElementAt(1).Value;
+                //    int count = 1;
+                //    this.right_arm_priority -= edge_weight;
+                //    while (edge_weight == comp_weight)
+                //    {
                         
-                        try
-                        {
+                //        try
+                //        {
                             
-                            comp_weight = this.right_coner_node.candidate_set.ElementAt(count).Value;
-                        }
-                        catch (System.ArgumentOutOfRangeException)
-                        {
-                            break;
+                //            comp_weight = this.right_coner_node.candidate_set.ElementAt(count).Value;
+                //        }
+                //        catch (System.ArgumentOutOfRangeException)
+                //        {
+                //            break;
 
-                        }
-                        this.right_arm_priority += edge_weight;
-                        count++;
-                    }
+                //        }
+                //        this.right_arm_priority += edge_weight;
+                //        count++;
+                //    }
 
-                }
+                //}
 
             }
             /// <summary>
@@ -518,9 +539,9 @@ namespace traveling_salesman_console_ver
                     }
                     // node from candidate set
                     // remove from all sets if 2 edges found
-                    if (e.left_Node.edges_found == 2 || e.right_Node.edges_found == 2)
+                    if (e.left_Node.edges_found >= 1 || e.right_Node.edges_found >= 1)
                     {
-                        if (e.left_Node.edges_found == 2)
+                        if (e.left_Node.edges_found >= 1)
                         {
                             foreach (Node n in Nodes)
                             {
@@ -755,7 +776,22 @@ namespace traveling_salesman_console_ver
                         }
                         else if (option_left_value == option_right_value)
                         {
-                            Console.WriteLine(" c atches and future weights is same");
+                            Console.WriteLine(" c matches and future weights is same");
+                            if (minimumHamiltonCycle.left_arm_priority < minimumHamiltonCycle.right_arm_priority)
+                            {
+                                // left has less weight so pick left unless swaped;
+                                e = new Undirected_Edge(Nodes[left_c.id], minimumHamiltonCycle.left_coner_node);
+                                minimumHamiltonCycle.right_coner_node.candidate_set.Remove(left_c.id);
+                                left_c.candidate_set.Remove(minimumHamiltonCycle.right_coner_node.id);
+
+                            }
+                            else
+                            {
+                                e = new Undirected_Edge(minimumHamiltonCycle.right_coner_node, Nodes[right_c.id]);
+                                minimumHamiltonCycle.left_coner_node.candidate_set.Remove(right_c.id);
+                                right_c.candidate_set.Remove(minimumHamiltonCycle.left_coner_node.id);
+
+                            }
 
 
                         }
@@ -774,22 +810,19 @@ namespace traveling_salesman_console_ver
                 }
                 else
                 {
+
+                    Node left_c_c1 = left_c.candidate_1();
+                    Node right_c_c1 = right_c.candidate_1();
+
+                    minimumHamiltonCycle.left_arm_priority = left_c.priority;
+                    minimumHamiltonCycle.right_arm_priority = right_c.priority;
+
                     Console.WriteLine("left weight sum is {0} right weightsum is {1} ",
                     minimumHamiltonCycle.left_arm_priority,
                     minimumHamiltonCycle.right_arm_priority);
-                    // calculate half point 
+              
 
-                    // before half point is reached
-                    //if (minimumhamiltoncycle.edges.count >= half_point)
-                    //{
-                    //    // swap prio 
-                    //    var temp = minimumhamiltoncycle.left_arm_priority;
-                    //    minimumhamiltoncycle.left_arm_priority = minimumhamiltoncycle.right_arm_priority;
-                    //    minimumhamiltoncycle.right_arm_priority = temp;
-
-                    //}
-
-                    if (minimumHamiltonCycle.left_arm_priority < minimumHamiltonCycle.right_arm_priority)
+                    if (minimumHamiltonCycle.left_arm_priority > minimumHamiltonCycle.right_arm_priority)
                     {
                         // left has less weight so pick left unless swaped;
                         e = new Undirected_Edge(Nodes[left_c.id], minimumHamiltonCycle.left_coner_node);
