@@ -897,9 +897,18 @@ namespace traveling_salesman_console_ver
                             
                             imaginary_cycle.add_edge_to_cycle(le,imaginary);
                             //
-                            Console.WriteLine("minimum cycle left candidate is " + minimumHamiltonCycle.left_coner_node.candidate_1(Nodes).id); 
                             
-                            
+
+                            Undirected_Edge re = new Undirected_Edge(imaginary_cycle.right_coner_node, imaginary_right_c, imaginary);
+                            Console.WriteLine(" left prio greater 2n imaginary edge is " + re.id);
+                            imaginary_cycle.left_coner_node.candidate_set.Remove(imaginary_right_c.id);
+                            imaginary_right_c.candidate_set.Remove(imaginary_cycle.left_coner_node.id);
+                            Console.WriteLine("new imiginary right c is " + imaginary_right_c.id);
+                            right_imaginary_edges.Add(re);
+                            imaginary_cycle.add_edge_to_cycle(re, imaginary);
+
+
+
 
                         }
                         else if (minimumHamiltonCycle.left_arm_priority == minimumHamiltonCycle.right_arm_priority)
@@ -919,6 +928,22 @@ namespace traveling_salesman_console_ver
                             right_imaginary_edges.Add(re);
                             imaginary_cycle.add_edge_to_cycle(re,imaginary);
 
+                            // left has higher priority so move left forwadd
+                            Console.WriteLine("minimum cycle left candidate is " + minimumHamiltonCycle.left_coner_node.candidate_1(Nodes).id);
+                            Undirected_Edge le = new Undirected_Edge(imaginary_left_c, imaginary_cycle.left_coner_node, imaginary);
+                            Console.WriteLine(" right prio greater 2nd imaginary edge is " + le.id);
+
+                            imaginary_cycle.right_coner_node.candidate_set.Remove(imaginary_left_c.id);
+
+                            imaginary_left_c.candidate_set.Remove(imaginary_cycle.right_coner_node.id);
+
+                            Console.WriteLine(" new imiginary left coner is " + imaginary_cycle.left_coner_node.id);
+                            left_imaginary_edges.Add(le);
+
+                            imaginary_cycle.add_edge_to_cycle(le, imaginary);
+                            //
+                            Console.WriteLine("minimum cycle left candidate is " + minimumHamiltonCycle.left_coner_node.candidate_1(Nodes).id);
+
 
 
                         }
@@ -930,7 +955,7 @@ namespace traveling_salesman_console_ver
 
                     Console.WriteLine("printing imaginaary cycle ****");
                     imaginary_cycle.printHamiltonCycle();
-
+                    bool add_all_imaginary_edges = false;
                     Console.WriteLine("imaginary left coner is " + imaginary_cycle.left_coner_node.id);
                     Console.WriteLine("imaginary right coner is " + imaginary_cycle.right_coner_node.id);
                     if (imaginary_left_c.id == imaginary_right_c.id)
@@ -940,10 +965,13 @@ namespace traveling_salesman_console_ver
                         long option_left_value;
                         long option_right_value;
                         long imaginary_c_id = imaginary_left_c.id;
+                      
 
                         if (imaginary_left_c.candidate_set.Count == 1 || imaginary_right_c.candidate_set.Count == 1)
                         {
                             Console.WriteLine("cannot look in future nly one candidate left");
+                            // all edges found 
+                            add_all_imaginary_edges = true;
                         }
                         else 
                         {
@@ -973,7 +1001,7 @@ namespace traveling_salesman_console_ver
                                     Console.WriteLine(" new imiginary left coner is " + imaginary_cycle.left_coner_node.id);
                                     left_imaginary_edges.Add(le);
                                     imaginary_cycle.add_edge_to_cycle(le,imaginary);
-                                    //pick_imaginary_left_chain = true;
+                                    pick_imaginary_left_chain = true;
                                     
                                 }
                                 else if (option_left_value == option_right_value)
@@ -992,7 +1020,7 @@ namespace traveling_salesman_console_ver
                                     right_imaginary_edges.Add(re);
                                     imaginary_cycle.add_edge_to_cycle(re,imaginary);
 
-                                    //pick_imaginary_left_chain = false;
+                                    pick_imaginary_left_chain = false;
 
                                 }
 
@@ -1042,7 +1070,31 @@ namespace traveling_salesman_console_ver
                     }
 
                     // add a chain to minimum hamilton cycle
-                    if (pick_imaginary_left_chain) 
+                    if (add_all_imaginary_edges) 
+                    {
+                        foreach (var edge in right_imaginary_edges)
+                        {
+                            Undirected_Edge ed = new Undirected_Edge(Nodes[edge.left_Node.id], Nodes[edge.right_Node.id], Nodes);
+                            minimumHamiltonCycle.left_coner_node.candidate_set.Remove(edge.right_Node.id);
+                            Nodes[edge.right_Node.id].candidate_set.Remove(minimumHamiltonCycle.left_coner_node.id);
+                            minimumHamiltonCycle.add_edge_to_cycle(ed, Nodes);
+                            
+
+
+                        }
+                        foreach (var edge in left_imaginary_edges)
+                        {
+                            Undirected_Edge ed = new Undirected_Edge(Nodes[edge.left_Node.id], Nodes[edge.right_Node.id], Nodes);
+                            minimumHamiltonCycle.right_coner_node.candidate_set.Remove(edge.left_Node.id);
+                            Nodes[edge.left_Node.id].candidate_set.Remove(minimumHamiltonCycle.right_coner_node.id);
+                            minimumHamiltonCycle.add_edge_to_cycle(ed, Nodes);
+                        }
+
+                        break;
+
+
+                    }
+                    else if (pick_imaginary_left_chain) 
                     {
                         // pick left chain
                         foreach(var edge in left_imaginary_edges) 
@@ -1052,6 +1104,8 @@ namespace traveling_salesman_console_ver
                             Nodes[edge.left_Node.id].candidate_set.Remove(minimumHamiltonCycle.right_coner_node.id);
                             minimumHamiltonCycle.add_edge_to_cycle(ed,Nodes);
                         }
+
+                        // add right edges till last edge
 
                     
                     
@@ -1083,8 +1137,13 @@ namespace traveling_salesman_console_ver
                 // when half point is reached
 
                 Console.WriteLine("edge created is " + e.id);
-                minimumHamiltonCycle.add_edge_to_cycle(e,Nodes);
-                if (d != null)
+                if(e != null) 
+                {
+                    minimumHamiltonCycle.add_edge_to_cycle(e, Nodes);
+
+                }
+                
+                if (d != null) // doest work still get null handle in try catch later
                 {
                     //Console.WriteLine("edge created is " + d.id);
                     minimumHamiltonCycle.add_edge_to_cycle(d,Nodes);
