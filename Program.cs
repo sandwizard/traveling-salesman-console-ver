@@ -80,7 +80,7 @@ namespace traveling_salesman_console_ver
 
 
         static public long[,] DistanceMax = {
-            //0
+         //0
          { 0,  83 , 93 ,129 ,133 ,139, 151 ,169, 135, 114, 110,  98 , 99  ,95 , 81 ,152, 159, 181, 172 ,185, 147, 157, 185 ,220 ,127, 181 },
          //1
   { 83  , 0 , 40 , 53,  62 , 64 , 91 ,116,  93,  84,  95,  98 ,89  ,68  ,67, 127, 156, 175, 152, 165, 160, 180, 223, 268 ,179, 197 },
@@ -190,7 +190,7 @@ namespace traveling_salesman_console_ver
 
             Console.WriteLine("start now");
             completeGraph.Hamilton_cycle minimum_cycle = new completeGraph.Hamilton_cycle();
-            completeGraph c = new completeGraph(DistanceMatrix);
+            completeGraph c = new completeGraph(DistanceMIn);
             minimum_cycle = c.FindMinHamiltonCycle();
             minimum_cycle.printHamiltonCycle();
             minimum_cycle.totalweight();
