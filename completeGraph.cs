@@ -296,20 +296,16 @@ namespace traveling_salesman_console_ver
             {
                 // for each entry of smallest edge find nodes on priority                
                 // first find genesis Node
-                //foreach(Node n in sorted_nodes) 
-                //{
-                //    long weight_to_candidate1 = n.distance[n.candidate_1(Nodes).id];
-                //    if(weight_to_candidate1 == smallestEdge_weight) 
-                //    {
-                //        this.genesisNode = Nodes[n.id];
-                //        break;                    
-                //    }                              
-                //}
-                Node node = sorted_nodes[0];
-                Node n2 = node.candidate_1(Nodes);
-
-                
-                Undirected_Edge genesis_edge = new Undirected_Edge(node, n2,Nodes);
+                foreach(Node n in sorted_nodes) 
+                {
+                    long weight_to_candidate1 = n.distance[n.candidate_1(Nodes).id];
+                    if(weight_to_candidate1 == smallestEdge_weight) 
+                    {
+                        this.genesisNode = Nodes[n.id];
+                        break;                    
+                    }                              
+                }
+                Undirected_Edge genesis_edge = new Undirected_Edge(genesisNode, genesisNode.candidate_1(Nodes),Nodes);
                 return genesis_edge;
             }
 
@@ -550,14 +546,21 @@ namespace traveling_salesman_console_ver
                     {
                         if (e.left_Node.edges_found >= 1)
                         {
-                            
                             foreach (Node n in state)
                             {
                                 n.candidate_set.Remove(e.left_Node.id);
-                                n.candidate_set.Remove(e.right_Node.id);
                             }
                         }
-                      
+                        else
+                        {
+                            foreach (Node n in state)
+                            {
+                                n.candidate_set.Remove(e.right_Node.id);
+                            }
+
+
+
+                        }
 
                     }
 
@@ -590,7 +593,6 @@ namespace traveling_salesman_console_ver
             {
                 this.left_Node = state[ln.id];
                 this.right_Node = state[rn.id];
-                
                 this.left_Node.right_edge = this;
                 this.right_Node.left_edge = this;
                 //Console.WriteLine("left node : " + left_Node.id);
@@ -675,17 +677,11 @@ namespace traveling_salesman_console_ver
         public Hamilton_cycle FindMinHamiltonCycle()
         {
             // this is the minimum hamilton cycle
+
             Array.ForEach<Node>(sorted_nodes, p => Console.WriteLine(p.id + " " + p.sum_of_distances));
             Hamilton_cycle minimumHamiltonCycle = new Hamilton_cycle();
             Hamilton_cycle pseudoCycle = new Hamilton_cycle();
-            foreach (var node in Nodes)
-            {
-                Console.WriteLine("-----------------Candidate set of " + node.id + "------------------------------");
-                foreach (var c in node.candidate_set)
-                {
-                    Console.WriteLine("node {0} -to -{1} weight = {2} ", node.id, c.Key, c.Value);
-                }
-            }
+
             Console.WriteLine("%%%%%%%%%%%%%%%%%%%%% statr%%%%%%%%%%%%%%%%%");
             // first get first priority node i.e genesis node
             Undirected_Edge g = minimumHamiltonCycle.findGenesis_edge();
@@ -699,130 +695,468 @@ namespace traveling_salesman_console_ver
             // addig edge 
 
             minimumHamiltonCycle.add_edge_to_cycle(g,Nodes);
-            /// implement new iteraation from here
-            /// 
-            Console.WriteLine("edges found" + minimumHamiltonCycle.right_coner_node.edges_found);
-           
+
+            Node left_c = minimumHamiltonCycle.left_coner_node.candidate_1(Nodes);
+            Node right_c = minimumHamiltonCycle.right_coner_node.candidate_1(Nodes);
+            Console.WriteLine("left c1 is " + left_c.id);
+            Console.WriteLine("right c1 is " + right_c.id);
+
+            /// implement duplicates
+            // first 2 edges
+
+            // decisions made for firstt edge
+            Undirected_Edge e = new Undirected_Edge();
+            Undirected_Edge d = new Undirected_Edge();
+            d = null;
+            // later find 2 cycles one from staring left and one from staring right
+            // o
+
+
+            // after first 2 edges are picked
+            // checking if conors aur updated
+            long half_point;
+            if (no_of_nodes % 2 == 0)
+            {
+                //even
+                half_point = no_of_nodes / 2;
+            }
+            else
+            {
+                half_point = (no_of_nodes - 1) / 2;
+            }
+
             while (minimumHamiltonCycle.edges.Count < no_of_nodes - 2)
             {
-                // setting up imaginary cycle
-                Node[] imaginary = new Node[no_of_nodes];
-                imaginary = Nodes.Select(a => (Node)a.Clone()).ToArray();
-                Dictionary<long, Node> nodes_in_left_iChain = new Dictionary<long, Node>();
-                Dictionary<long, Node> nodes_in_right_iChain = new Dictionary<long, Node>();
-                Hamilton_cycle imaginary_cycle = new Hamilton_cycle(minimumHamiltonCycle, imaginary);
+
+                Console.WriteLine("left coner is " + minimumHamiltonCycle.left_coner_node.id);
+                Console.WriteLine("right coner is " + minimumHamiltonCycle.right_coner_node.id);
+                // first set up candidates for both coner nodes
+
+                left_c = minimumHamiltonCycle.left_coner_node.candidate_1(Nodes);
+                right_c = minimumHamiltonCycle.right_coner_node.candidate_1(Nodes);
+
+                Console.WriteLine("left c1 is " + left_c.id);
+                Console.WriteLine("right c1 is " + right_c.id);
+
+
+
+                // now calculate weight sums
+                minimumHamiltonCycle.calculate_lr_priorities_with_weights();
+
                 
-                Node imaginary_left_c = imaginary_cycle.left_coner_node.candidate_1(imaginary);
-                Node imaginary_right_c = imaginary_cycle.right_coner_node.candidate_1(imaginary);
-                Console.WriteLine("imaginary left c {0} and imaginary right c {1}", imaginary_left_c.id, imaginary_right_c.id);
-                while(imaginary_left_c!= imaginary_right_c) 
+                if(left_c.id == right_c.id)
                 {
-                    // extend chain on both ends and check if loop each time 
-                    // extending left
-                    Undirected_Edge l_edge = new Undirected_Edge(
-                                imaginary_left_c, imaginary_cycle.left_coner_node, imaginary);
-                    imaginary_cycle.add_edge_to_cycle(l_edge, imaginary);
-                    Console.WriteLine(" imaginary chain edge is " + l_edge.id);
-                    nodes_in_left_iChain.Add(imaginary_left_c.id, imaginary_left_c);
-                    imaginary_left_c = imaginary_cycle.left_coner_node.candidate_1(imaginary);
-                    //extending right
-                    Undirected_Edge r_edge = new Undirected_Edge(
-                               imaginary_cycle.right_coner_node, imaginary_right_c, imaginary);
-                    imaginary_cycle.add_edge_to_cycle(r_edge, imaginary);
-                    Console.WriteLine(" imaginary chain edge is " + r_edge.id);
-                    imaginary_right_c = imaginary_cycle.right_coner_node.candidate_1(imaginary);
+                    Console.WriteLine("c is " + left_c.id);
 
 
-                    return minimumHamiltonCycle;
-                }
-
-                if (imaginary_left_c.id == imaginary_right_c.id)
-                {
-                    Node common_candidate = imaginary_left_c;
-                    // find next candidates of the conors implement next of next if same
-                    Node imaginary_left_c2 = imaginary_cycle.left_coner_node.future_c1(imaginary);
-                    Node imaginary_right_c2 = imaginary_cycle.right_coner_node.future_c1(imaginary);
-                    Console.WriteLine("imaginary left c2 {0} and imaginary right c2 {1}", imaginary_left_c2.id, imaginary_right_c2.id);
-                    // if left c2 and right c2 are equal
-                    if (imaginary_left_c2.id == imaginary_right_c2.id)
+                    // look to the future 
+                    long option_left_value;
+                    long option_right_value;
+                    long c_id = left_c.id;
+                    // if left edge is picked find futur of right
+                    if (minimumHamiltonCycle.left_coner_node.candidate_set.Count == 1 || minimumHamiltonCycle.right_coner_node.candidate_set.Count == 1)
                     {
-                        // same c2 higher prio wins
-                        if (imaginary_cycle.left_coner_node.priority > imaginary_cycle.right_coner_node.priority)
-                        {
-                            //left wins remove right edge candidaacy
-                            Console.WriteLine("left wins");
-                            Undirected_Edge l_edge = new Undirected_Edge(
-                                common_candidate, imaginary_cycle.left_coner_node, imaginary);
-                            imaginary_cycle.add_edge_to_cycle(l_edge, imaginary);
-                            Console.WriteLine(" imaginary chain edge is " + l_edge.id);
-                            return minimumHamiltonCycle;
-
-                        }
-                        else if (imaginary_cycle.left_coner_node.priority == imaginary_cycle.right_coner_node.priority)
-                        {
-                        }
-                        else
-                        {
-                            Console.WriteLine("right wins");
-                            Undirected_Edge r_edge = new Undirected_Edge(
-                                imaginary_cycle.right_coner_node, common_candidate, imaginary);
-                            imaginary_cycle.add_edge_to_cycle(r_edge, imaginary);
-                            Console.WriteLine(" imaginary chain edge is " + r_edge.id);
-                            return minimumHamiltonCycle;
-                        }
-
-
-
+                        Console.WriteLine("cannot look in future nly one candidate left");
                     }
-                    else 
+                    else
                     {
+                        Node right_future = minimumHamiltonCycle.right_coner_node.future_c1(Nodes);
+                        Node left_future = minimumHamiltonCycle.left_coner_node.future_c1(Nodes);
+
+                        Console.WriteLine(" right current c is" + minimumHamiltonCycle.right_coner_node.candidate_1(Nodes).id);
+                        Console.WriteLine(" right future c is" + right_future.id);
+                        Console.WriteLine(" left current c is" + minimumHamiltonCycle.left_coner_node.candidate_1(Nodes).id);
+
                         
-
-                        // continue chain and compare with c2 of both conors
-                        Node chain_candidate = common_candidate.candidate_1(imaginary);
-                        Console.WriteLine("chain candidate = " + chain_candidate.id);
-                        while (imaginary_left_c2.id != chain_candidate.id && imaginary_right_c2.id != chain_candidate.id)
+                        Console.WriteLine(" left future c is" + left_future.id);
+                        if (right_future.id == left_future.id) 
                         {
-                            Undirected_Edge chain_edge = new Undirected_Edge(chain_candidate, common_candidate, imaginary);
-                            imaginary_cycle.add_edge_to_cycle(chain_edge, imaginary);
-                            Console.WriteLine(" imaginary chain edge is " + chain_edge.id);
-                            chain_candidate = common_candidate.candidate_1(imaginary);
-                            return minimumHamiltonCycle;
+                            option_left_value = Getdistance(minimumHamiltonCycle.left_coner_node.id, c_id) + Getdistance(minimumHamiltonCycle.right_coner_node.id, right_future.id);
+                            option_right_value = Getdistance(minimumHamiltonCycle.right_coner_node.id, c_id) + Getdistance(minimumHamiltonCycle.left_coner_node.id, left_future.id);
+                            Console.WriteLine("if left picked weight sum = {0} if right is picked weight sum ={1}", option_left_value, option_right_value);
+
+                            if (option_left_value < option_right_value)
+                            {
+                                e = new Undirected_Edge(Nodes[left_c.id], minimumHamiltonCycle.left_coner_node,Nodes);
+                                minimumHamiltonCycle.right_coner_node.candidate_set.Remove(left_c.id);
+                                left_c.candidate_set.Remove(minimumHamiltonCycle.right_coner_node.id);
+
+                            }
+                            else if (option_left_value == option_right_value)
+                            {
+                                Console.WriteLine(" c matches and future weights is same find what to do");
+                                return minimumHamiltonCycle;
+
+
+                            }
+                            else
+                            {
+                                e = new Undirected_Edge(minimumHamiltonCycle.right_coner_node, Nodes[right_c.id],Nodes);
+                                minimumHamiltonCycle.left_coner_node.candidate_set.Remove(right_c.id);
+                                right_c.candidate_set.Remove(minimumHamiltonCycle.left_coner_node.id);
+
+                            }
 
                         }
-                        if (imaginary_left_c2.id == chain_candidate.id)
+                        else 
                         {
-                            Console.WriteLine("left wins");
-                            // left wins remove right edge possibility
-                            return minimumHamiltonCycle;
+                            // future c dont match so compare priority instead
+                            if(left_future.priority > right_future.priority) 
+                            {
+                                // right edge needs to be picked since future of left is more desirable
+                                e = new Undirected_Edge(minimumHamiltonCycle.right_coner_node, Nodes[right_c.id],Nodes);
+                                minimumHamiltonCycle.left_coner_node.candidate_set.Remove(right_c.id);
+                                right_c.candidate_set.Remove(minimumHamiltonCycle.left_coner_node.id);
+                                
+
+                            }
+                            else if(left_future.priority == right_future.priority) 
+                            {
+                                Console.WriteLine(" future priorities match find what to do");
+                                return minimumHamiltonCycle;
+                            
+                            }
+                            else
+                            {
+                                e = new Undirected_Edge(Nodes[left_c.id], minimumHamiltonCycle.left_coner_node,Nodes);
+                                minimumHamiltonCycle.right_coner_node.candidate_set.Remove(left_c.id);
+                                left_c.candidate_set.Remove(minimumHamiltonCycle.right_coner_node.id);
+
+
+
+                            }
+
+
                         }
-                        else if (imaginary_right_c2.id == chain_candidate.id)
-                        {
-                            // right wins remove left edge possibility nad c2 from right connor since it goes from chain
-                            Console.WriteLine("right wins");
-                            // removing left edge possibility from Nodes state
-                            Nodes[imaginary_cycle.left_coner_node.id].candidate_set.Remove(common_candidate.id);
-                            Nodes[imaginary_cycle.right_coner_node.id].candidate_set.Remove(chain_candidate.id);
                             
 
-                        }
                     }
+
+
+
+                }
+                else
+                {
+                    // create a copy of state of nodes
+                    Node[] imaginary = new Node[no_of_nodes];
+                    imaginary = Nodes.Select(a=>(Node)a.Clone()).ToArray();
+
+                    
+                    
+
+                    // create a copy of minhamilton cycle
+                    Hamilton_cycle imaginary_cycle = new Hamilton_cycle(minimumHamiltonCycle,imaginary);
+                    
+                    // if initil candidates are not equal create a new imaginary selection on arms till match
+                    bool pick_imaginary_left_chain = false;
                     
 
 
 
+                    Node imaginary_left_c = imaginary_cycle.left_coner_node.candidate_1(imaginary);
 
+                    Node imaginary_right_c = imaginary_cycle.right_coner_node.candidate_1(imaginary);
+    
+
+                    List<Undirected_Edge> left_imaginary_edges = new List<Undirected_Edge>();
+                    List<Undirected_Edge> right_imaginary_edges = new List<Undirected_Edge>();
+                   
+                    
+                    Console.WriteLine("imaginary left c {0} and imaginary right c {1}", imaginary_cycle.left_coner_node.id, imaginary_cycle.right_coner_node.id);
+
+                    // create first 2 imaginary edges 
+                    
+                    
+                    while (imaginary_left_c.id != imaginary_right_c.id) 
+                    {
+                        Console.WriteLine("new left c {0} and new right c {1}", imaginary_cycle.left_coner_node.id, imaginary_cycle.right_coner_node.id);
+
+                        
+
+                        imaginary_cycle.left_arm_priority = imaginary_left_c.priority;
+                        imaginary_cycle.right_arm_priority = imaginary_right_c.priority;
+
+                        Console.WriteLine("no match so comparing priority left  p is {0} right p is {1} ",
+                        imaginary_cycle.left_arm_priority,
+                        imaginary_cycle.right_arm_priority);
+                        Console.WriteLine("minimum cycle left candidate is " + minimumHamiltonCycle.left_coner_node.candidate_1(Nodes).id);
+
+                        if (imaginary_cycle.left_arm_priority > imaginary_cycle.right_arm_priority)
+                        {
+                            // left has higher priority so move left forwadd
+                            Console.WriteLine("minimum cycle left candidate is " + minimumHamiltonCycle.left_coner_node.candidate_1(Nodes).id);
+                            Undirected_Edge le = new Undirected_Edge(imaginary_left_c, imaginary_cycle.left_coner_node, imaginary);
+                            Console.WriteLine(" left prio greater imaginary edge is " +le.id);
+                           
+                            imaginary_cycle.right_coner_node.candidate_set.Remove(imaginary_left_c.id);
+                            
+                            imaginary_left_c.candidate_set.Remove(imaginary_cycle.right_coner_node.id);
+
+                            Console.WriteLine(" new imiginary left coner is " + imaginary_cycle.left_coner_node.id);
+                            left_imaginary_edges.Add(le);
+                            
+                            imaginary_cycle.add_edge_to_cycle(le,imaginary);
+                            //
+                            
+
+                            Undirected_Edge re = new Undirected_Edge(imaginary_cycle.right_coner_node, imaginary_right_c, imaginary);
+                            Console.WriteLine(" left prio greater 2n imaginary edge is " + re.id);
+                            imaginary_cycle.left_coner_node.candidate_set.Remove(imaginary_right_c.id);
+                            imaginary_right_c.candidate_set.Remove(imaginary_cycle.left_coner_node.id);
+                            Console.WriteLine("new imiginary right c is " + imaginary_right_c.id);
+                            right_imaginary_edges.Add(re);
+                            imaginary_cycle.add_edge_to_cycle(re, imaginary);
+
+
+
+
+                        }
+                        else if (minimumHamiltonCycle.left_arm_priority == minimumHamiltonCycle.right_arm_priority)
+                        {
+                            Console.WriteLine("both have same prio so add both or not fiuger it out");// for now adding both edges if not same
+                            
+
+                        }
+                        else
+                        {
+                            // picking right if right has less weight unless halfpoint reached
+                            Undirected_Edge re = new Undirected_Edge(imaginary_cycle.right_coner_node, imaginary_right_c, imaginary);
+                            Console.WriteLine(" right prio greater imaginary edge is " + re.id);
+                            imaginary_cycle.left_coner_node.candidate_set.Remove(imaginary_right_c.id);
+                            imaginary_right_c.candidate_set.Remove(imaginary_cycle.left_coner_node.id);
+                            Console.WriteLine("new imiginary right c is " + imaginary_right_c.id);
+                            right_imaginary_edges.Add(re);
+                            imaginary_cycle.add_edge_to_cycle(re,imaginary);
+
+                            // left has higher priority so move left forwadd
+                            Console.WriteLine("minimum cycle left candidate is " + minimumHamiltonCycle.left_coner_node.candidate_1(Nodes).id);
+                            Undirected_Edge le = new Undirected_Edge(imaginary_left_c, imaginary_cycle.left_coner_node, imaginary);
+                            Console.WriteLine(" right prio greater 2nd imaginary edge is " + le.id);
+
+                            imaginary_cycle.right_coner_node.candidate_set.Remove(imaginary_left_c.id);
+
+                            imaginary_left_c.candidate_set.Remove(imaginary_cycle.right_coner_node.id);
+
+                            Console.WriteLine(" new imiginary left coner is " + imaginary_cycle.left_coner_node.id);
+                            left_imaginary_edges.Add(le);
+
+                            imaginary_cycle.add_edge_to_cycle(le, imaginary);
+                            //
+                            Console.WriteLine("minimum cycle left candidate is " + minimumHamiltonCycle.left_coner_node.candidate_1(Nodes).id);
+
+
+
+                        }
+                        imaginary_left_c = imaginary_cycle.left_coner_node.candidate_1(imaginary);
+                        imaginary_right_c = imaginary_cycle.right_coner_node.candidate_1(imaginary);
+
+
+                    }
+
+                    Console.WriteLine("printing imaginaary cycle ****");
+                    imaginary_cycle.printHamiltonCycle();
+                    bool add_all_imaginary_edges = false;
+                    Console.WriteLine("imaginary left coner is " + imaginary_cycle.left_coner_node.id);
+                    Console.WriteLine("imaginary right coner is " + imaginary_cycle.right_coner_node.id);
+                    if (imaginary_left_c.id == imaginary_right_c.id)
+                    {
+
+                        // look to the future 
+                        long option_left_value;
+                        long option_right_value;
+                        long imaginary_c_id = imaginary_left_c.id;
+                      
+
+                        if (imaginary_left_c.candidate_set.Count == 1 || imaginary_right_c.candidate_set.Count == 1)
+                        {
+                            Console.WriteLine("cannot look in future nly one candidate left");
+                            // all edges found 
+                            add_all_imaginary_edges = true;
+                        }
+                        else 
+                        {
+                            Node imaginary_right_future = imaginary_cycle.right_coner_node.future_c1(imaginary);
+                            Node imaginary_left_future = imaginary_cycle.left_coner_node.future_c1(imaginary);
+
+                  
+                            Console.WriteLine(" right current c1  is" + imaginary_right_c.id);
+                            Console.WriteLine(" right future c1 is" + imaginary_right_future.id);
+
+
+                            Console.WriteLine(" left current c1  is" + imaginary_left_c.id);
+                            Console.WriteLine(" left future c1 is" + imaginary_left_future.id);
+
+
+                            if (imaginary_right_future.id == imaginary_left_future.id)
+                            {
+                                option_left_value = Getdistance(imaginary_cycle.left_coner_node.id, imaginary_c_id) + Getdistance(imaginary_cycle.right_coner_node.id, imaginary_right_future.id);
+                                option_right_value = Getdistance(imaginary_cycle.right_coner_node.id, imaginary_c_id) + Getdistance(imaginary_cycle.left_coner_node.id, imaginary_left_future.id);
+                                Console.WriteLine("if left picked weight sum = {0} if right is picked weight sum ={1}", option_left_value, option_right_value);
+
+                                if (option_left_value < option_right_value)
+                                {
+                                    Undirected_Edge le = new Undirected_Edge(imaginary_left_c, imaginary_cycle.left_coner_node, imaginary);
+                                    Console.WriteLine(" left prio greater imaginary edge is " + le.id);
+                                    imaginary_cycle.right_coner_node.candidate_set.Remove(imaginary_left_c.id);
+                                    Console.WriteLine(" new imiginary left coner is " + imaginary_cycle.left_coner_node.id);
+                                    left_imaginary_edges.Add(le);
+                                    imaginary_cycle.add_edge_to_cycle(le,imaginary);
+                                    pick_imaginary_left_chain = true;
+                                    
+                                }
+                                else if (option_left_value == option_right_value)
+                                {
+                                    Console.WriteLine(" c matches and future weights is same find what to do");
+                                    return minimumHamiltonCycle;
+
+
+                                }
+                                else
+                                {
+                                    Undirected_Edge re = new Undirected_Edge(imaginary_cycle.right_coner_node, imaginary_right_c, imaginary);
+                                    Console.WriteLine(" right prio greater imaginary edge is " + re.id);
+                                    imaginary_cycle.left_coner_node.candidate_set.Remove(imaginary_right_c.id);
+                                    Console.WriteLine("new imiginary right c is " + imaginary_right_c.id);
+                                    right_imaginary_edges.Add(re);
+                                    imaginary_cycle.add_edge_to_cycle(re,imaginary);
+
+                                    pick_imaginary_left_chain = false;
+
+                                }
+
+                            }
+                            else
+                            {
+                                // future c dont match so compare priority instead
+                                if (imaginary_left_future.priority > imaginary_right_future.priority)
+                                {
+                                    Undirected_Edge re = new Undirected_Edge(imaginary_cycle.right_coner_node, imaginary_right_c, imaginary);
+                                    Console.WriteLine(" right prio greater imaginary edge is " + re.id);
+                                    imaginary_cycle.left_coner_node.candidate_set.Remove(imaginary_right_c.id);
+                                    Console.WriteLine("new imiginary right c is " + imaginary_right_c.id);
+                                    right_imaginary_edges.Add(re);
+                                    imaginary_cycle.add_edge_to_cycle(re,imaginary);
+
+                                    pick_imaginary_left_chain = false;
+
+                                }
+                                else if (imaginary_left_future.priority == imaginary_right_future.priority)
+                                {
+                                    Console.WriteLine(" future priorities match find what to do");
+                                    return minimumHamiltonCycle;
+
+                                }
+                                else
+                                {
+                                    Undirected_Edge le = new Undirected_Edge(imaginary_left_c, imaginary_cycle.left_coner_node, imaginary);
+                                    Console.WriteLine(" left prio greater imaginary edge is " + le.id);
+                                    imaginary_cycle.right_coner_node.candidate_set.Remove(imaginary_left_c.id);
+                                    Console.WriteLine(" new imiginary left coner is " + imaginary_cycle.left_coner_node.id);
+                                    left_imaginary_edges.Add(le);
+                                    imaginary_cycle.add_edge_to_cycle(le,imaginary);
+                                    pick_imaginary_left_chain = true;
+
+
+                                }
+
+
+                            }
+                            
+                           
+
+
+                        }
+
+                    }
+
+                    // add a chain to minimum hamilton cycle
+                    if (add_all_imaginary_edges) 
+                    {
+                        foreach (var edge in right_imaginary_edges)
+                        {
+                            Undirected_Edge ed = new Undirected_Edge(Nodes[edge.left_Node.id], Nodes[edge.right_Node.id], Nodes);
+                            minimumHamiltonCycle.left_coner_node.candidate_set.Remove(edge.right_Node.id);
+                            Nodes[edge.right_Node.id].candidate_set.Remove(minimumHamiltonCycle.left_coner_node.id);
+                            minimumHamiltonCycle.add_edge_to_cycle(ed, Nodes);
+                            
+
+
+                        }
+                        foreach (var edge in left_imaginary_edges)
+                        {
+                            Undirected_Edge ed = new Undirected_Edge(Nodes[edge.left_Node.id], Nodes[edge.right_Node.id], Nodes);
+                            minimumHamiltonCycle.right_coner_node.candidate_set.Remove(edge.left_Node.id);
+                            Nodes[edge.left_Node.id].candidate_set.Remove(minimumHamiltonCycle.right_coner_node.id);
+                            minimumHamiltonCycle.add_edge_to_cycle(ed, Nodes);
+                        }
+
+                        break;
+
+
+                    }
+                    else if (pick_imaginary_left_chain) 
+                    {
+                        // pick left chain
+                        foreach(var edge in left_imaginary_edges) 
+                        {
+                            Undirected_Edge ed = new Undirected_Edge(Nodes[edge.left_Node.id], Nodes[edge.right_Node.id], Nodes);
+                            minimumHamiltonCycle.right_coner_node.candidate_set.Remove(edge.left_Node.id);
+                            Nodes[edge.left_Node.id].candidate_set.Remove(minimumHamiltonCycle.right_coner_node.id);
+                            minimumHamiltonCycle.add_edge_to_cycle(ed,Nodes);
+                        }
+
+                        // add right edges till last edge
+
+                    
+                    
+                    }
+                    else if(pick_imaginary_left_chain == false)
+                    {
+                        // pick right chian
+                        foreach(var edge in right_imaginary_edges) 
+                        {
+                            Undirected_Edge ed = new Undirected_Edge(Nodes[edge.left_Node.id], Nodes[edge.right_Node.id], Nodes);
+                            minimumHamiltonCycle.left_coner_node.candidate_set.Remove(edge.right_Node.id);
+                            Nodes[edge.right_Node.id].candidate_set.Remove(minimumHamiltonCycle.left_coner_node.id);
+                            minimumHamiltonCycle.add_edge_to_cycle(ed,Nodes);
+
+
+                        }
+
+                    
+                    }
+                    Console.WriteLine(" printinf official cycle");
+                    minimumHamiltonCycle.printHamiltonCycle();
+
+                    
+                    
+                    
 
                 }
 
+                // when half point is reached
 
+                Console.WriteLine("edge created is " + e.id);
+                if(e != null) 
+                {
+                    minimumHamiltonCycle.add_edge_to_cycle(e, Nodes);
 
+                }
+                
+                if (d != null) // doest work still get null handle in try catch later
+                {
+                    //Console.WriteLine("edge created is " + d.id);
+                    minimumHamiltonCycle.add_edge_to_cycle(d,Nodes);
+                    d = null;
+                }
 
             }
-
-
-            //######################################
-
+            // last 2 edge 
+            e = e = new Undirected_Edge(minimumHamiltonCycle.left_coner_node.candidate_1(Nodes), minimumHamiltonCycle.left_coner_node,Nodes);
+            minimumHamiltonCycle.add_edge_to_cycle(e,Nodes);
+            e = e = new Undirected_Edge(minimumHamiltonCycle.left_coner_node, minimumHamiltonCycle.right_coner_node,Nodes);
+            minimumHamiltonCycle.add_edge_to_cycle(e,Nodes);
+            // set up candidates for both and compare weights;
 
             return minimumHamiltonCycle;
 
