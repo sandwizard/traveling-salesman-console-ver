@@ -702,115 +702,101 @@ namespace traveling_salesman_console_ver
             /// implement new iteraation from here
             /// 
             Console.WriteLine("edges found" + minimumHamiltonCycle.right_coner_node.edges_found);
-           
-            while (minimumHamiltonCycle.edges.Count < no_of_nodes - 2)
+            Node[] imaginary = new Node[no_of_nodes];
+            imaginary = Nodes.Select(a => (Node)a.Clone()).ToArray();
+            Hamilton_cycle imaginary_cycle = new Hamilton_cycle(minimumHamiltonCycle, imaginary);
+            while (imaginary_cycle.edges.Count < no_of_nodes - 2)
             {
                 // setting up imaginary cycle
-                Node[] imaginary = new Node[no_of_nodes];
-                imaginary = Nodes.Select(a => (Node)a.Clone()).ToArray();
-                Dictionary<long, Node> nodes_in_left_iChain = new Dictionary<long, Node>();
-                Dictionary<long, Node> nodes_in_right_iChain = new Dictionary<long, Node>();
-                Hamilton_cycle imaginary_cycle = new Hamilton_cycle(minimumHamiltonCycle, imaginary);
+                
                 
                 Node imaginary_left_c = imaginary_cycle.left_coner_node.candidate_1(imaginary);
                 Node imaginary_right_c = imaginary_cycle.right_coner_node.candidate_1(imaginary);
                 Console.WriteLine("imaginary left c {0} and imaginary right c {1}", imaginary_left_c.id, imaginary_right_c.id);
                 while(imaginary_left_c!= imaginary_right_c) 
                 {
-                    // extend chain on both ends and check if loop each time 
-                    // extending left
-                    Undirected_Edge l_edge = new Undirected_Edge(
+                    //compare priority of edges
+                    if(imaginary_cycle.left_coner_node.priority > imaginary_cycle.right_coner_node.priority) 
+                    {
+                        //extend left
+                        Undirected_Edge l_edge = new Undirected_Edge(
                                 imaginary_left_c, imaginary_cycle.left_coner_node, imaginary);
-                    imaginary_cycle.add_edge_to_cycle(l_edge, imaginary);
-                    Console.WriteLine(" imaginary chain edge is " + l_edge.id);
-                    nodes_in_left_iChain.Add(imaginary_left_c.id, imaginary_left_c);
-                    imaginary_left_c = imaginary_cycle.left_coner_node.candidate_1(imaginary);
-                    //extending right
-                    Undirected_Edge r_edge = new Undirected_Edge(
-                               imaginary_cycle.right_coner_node, imaginary_right_c, imaginary);
-                    imaginary_cycle.add_edge_to_cycle(r_edge, imaginary);
-                    Console.WriteLine(" imaginary chain edge is " + r_edge.id);
-                    imaginary_right_c = imaginary_cycle.right_coner_node.candidate_1(imaginary);
+                        imaginary_cycle.add_edge_to_cycle(l_edge, imaginary);
 
+                        // updating left candidate
+                        imaginary_left_c = imaginary_cycle.left_coner_node.candidate_1(imaginary);
+                        Console.WriteLine(" imaginary chain edge is " + l_edge.id);
+                        Console.WriteLine(" new imaginary left candidate is " + imaginary_left_c.id);
 
-                    return minimumHamiltonCycle;
+                    }
+                    else if(imaginary_cycle.left_coner_node.priority == imaginary_cycle.right_coner_node.priority) 
+                    {
+                        // not sure what to do yet
+                        Console.WriteLine("pioritiry values are same");
+                        return minimumHamiltonCycle;
+                    }
+                    else 
+                    {
+                        //extending right
+                        Undirected_Edge r_edge = new Undirected_Edge(
+                              imaginary_cycle.right_coner_node, imaginary_right_c, imaginary);
+                        imaginary_cycle.add_edge_to_cycle(r_edge, imaginary);
+                        Console.WriteLine(" imaginary chain edge is " + r_edge.id);
+                        imaginary_right_c = imaginary_cycle.right_coner_node.candidate_1(imaginary);
+
+                    }                                                                            
+                   
                 }
 
                 if (imaginary_left_c.id == imaginary_right_c.id)
                 {
-                    Node common_candidate = imaginary_left_c;
-                    // find next candidates of the conors implement next of next if same
-                    Node imaginary_left_c2 = imaginary_cycle.left_coner_node.future_c1(imaginary);
-                    Node imaginary_right_c2 = imaginary_cycle.right_coner_node.future_c1(imaginary);
-                    Console.WriteLine("imaginary left c2 {0} and imaginary right c2 {1}", imaginary_left_c2.id, imaginary_right_c2.id);
-                    // if left c2 and right c2 are equal
-                    if (imaginary_left_c2.id == imaginary_right_c2.id)
-                    {
-                        // same c2 higher prio wins
-                        if (imaginary_cycle.left_coner_node.priority > imaginary_cycle.right_coner_node.priority)
-                        {
-                            //left wins remove right edge candidaacy
-                            Console.WriteLine("left wins");
-                            Undirected_Edge l_edge = new Undirected_Edge(
-                                common_candidate, imaginary_cycle.left_coner_node, imaginary);
-                            imaginary_cycle.add_edge_to_cycle(l_edge, imaginary);
-                            Console.WriteLine(" imaginary chain edge is " + l_edge.id);
-                            return minimumHamiltonCycle;
-
-                        }
-                        else if (imaginary_cycle.left_coner_node.priority == imaginary_cycle.right_coner_node.priority)
-                        {
-                        }
-                        else
-                        {
-                            Console.WriteLine("right wins");
-                            Undirected_Edge r_edge = new Undirected_Edge(
-                                imaginary_cycle.right_coner_node, common_candidate, imaginary);
-                            imaginary_cycle.add_edge_to_cycle(r_edge, imaginary);
-                            Console.WriteLine(" imaginary chain edge is " + r_edge.id);
-                            return minimumHamiltonCycle;
-                        }
-
-
-
-                    }
-                    else 
-                    {
-                        
-
-                        // continue chain and compare with c2 of both conors
-                        Node chain_candidate = common_candidate.candidate_1(imaginary);
-                        Console.WriteLine("chain candidate = " + chain_candidate.id);
-                        while (imaginary_left_c2.id != chain_candidate.id && imaginary_right_c2.id != chain_candidate.id)
-                        {
-                            Undirected_Edge chain_edge = new Undirected_Edge(chain_candidate, common_candidate, imaginary);
-                            imaginary_cycle.add_edge_to_cycle(chain_edge, imaginary);
-                            Console.WriteLine(" imaginary chain edge is " + chain_edge.id);
-                            chain_candidate = common_candidate.candidate_1(imaginary);
-                            return minimumHamiltonCycle;
-
-                        }
-                        if (imaginary_left_c2.id == chain_candidate.id)
-                        {
-                            Console.WriteLine("left wins");
-                            // left wins remove right edge possibility
-                            return minimumHamiltonCycle;
-                        }
-                        else if (imaginary_right_c2.id == chain_candidate.id)
-                        {
-                            // right wins remove left edge possibility nad c2 from right connor since it goes from chain
-                            Console.WriteLine("right wins");
-                            // removing left edge possibility from Nodes state
-                            Nodes[imaginary_cycle.left_coner_node.id].candidate_set.Remove(common_candidate.id);
-                            Nodes[imaginary_cycle.right_coner_node.id].candidate_set.Remove(chain_candidate.id);
-                            
-
-                        }
-                    }
+                    Console.WriteLine(" same candidate **** " + imaginary_left_c.id);
+                    //compare future edge weights
+                    // left future  
+                    Node right_future_candidate = imaginary_cycle.right_coner_node.future_c1(imaginary);
+                   
+                    // right future 
+                    Node left_future_candidate = imaginary_cycle.left_coner_node.future_c1(imaginary);
                     
 
 
+                    
+    
 
+                    // find 4 edges  goodness values and compare
+                    // if left goes to candidate(case1)
+                    long left_to_candidate_goodness = imaginary_left_c.priority / Getdistance(imaginary_cycle.left_coner_node.id, imaginary_left_c.id);
+                    long right_to_future_goodness = right_future_candidate.priority / Getdistance(imaginary_cycle.right_coner_node.id, right_future_candidate.id);
+                    Console.WriteLine("left future: right goes to {0} and left edge goodness {1} and right edge goodness {2}", right_future_candidate.id, left_to_candidate_goodness,right_to_future_goodness);
+
+                    long left_goodness = left_to_candidate_goodness + right_to_future_goodness;
+
+                    // if right goes to candidate(case2)
+                    long right_to_candidate_goodness = imaginary_right_c.priority / Getdistance(imaginary_cycle.right_coner_node.id, imaginary_right_c.id);
+                    long left_to_future_goodness = left_future_candidate.priority / Getdistance(imaginary_cycle.left_coner_node.id, left_future_candidate.id);
+                    Console.WriteLine("right future: left goes to {0} and left edge goodness {1} and right edge goodness {2}", right_future_candidate.id, left_to_future_goodness, right_to_candidate_goodness);
+                    
+                    // find smallest goodness value
+
+
+
+                    if ((left_to_candidate_goodness < right_to_candidate_goodness && left_to_candidate_goodness < left_to_future_goodness)
+                        ||
+                        (right_to_future_goodness < right_to_candidate_goodness && right_to_future_goodness < left_to_future_goodness))
+
+                    {
+                        //left to cantidate case has lowest goodness edge 
+                        Console.WriteLine("left discarded");
+                        imaginary[imaginary_cycle.left_coner_node.id].candidate_set.Remove(imaginary_left_c.id);
+                    
+                    }
+                    else 
+                    {
+                        //right to cantidate case has lowest goodness edge 
+                        Console.WriteLine("right discarded");
+                        imaginary[imaginary_cycle.right_coner_node.id].candidate_set.Remove(imaginary_left_c.id);
+                    }
+                    
 
 
                 }
@@ -824,7 +810,7 @@ namespace traveling_salesman_console_ver
             //######################################
 
 
-            return minimumHamiltonCycle;
+            return imaginary_cycle;
 
         }
 
