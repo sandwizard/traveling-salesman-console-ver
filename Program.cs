@@ -10,7 +10,7 @@ namespace traveling_salesman_console_ver
     class Program
     {
         static public long[,] DistanceMIn = {   
-            //0
+            //o
              { 0 ,633 ,257 , 91 ,412, 150 , 80, 134, 259, 505, 353, 324 , 70, 211, 268, 246 ,121 },
              //1
             { 633 ,  0 ,390 ,661 ,227 ,488, 572, 530 ,555, 289 ,282, 638 ,567 ,466 ,420 ,745 ,518 },
@@ -28,21 +28,21 @@ namespace traveling_salesman_console_ver
             { 134, 530 ,154 ,105 ,309  ,34 , 29 ,  0 ,249 ,402, 250, 314,  68, 108 ,165 ,349  ,36 },
             //8
             { 259, 555, 372, 175, 338 ,264, 232 ,249 ,  0, 495, 352,  95, 189, 326, 383, 202, 236 },
-            //9
-            { 505, 289 ,262, 476 ,196, 360 ,444 ,402 ,495  , 0, 154, 578, 439 ,336 ,240 ,685 ,390 },
             //10
-            { 353, 282, 110 ,324,  61, 208, 292, 250, 352, 154 ,  0, 435, 287, 184, 140 ,542 ,238 },
+            { 505, 289 ,262, 476 ,196, 360 ,444 ,402 ,495  , 0, 154, 578, 439 ,336 ,240 ,685 ,390 },
             //11
-            { 324, 638, 437, 240, 421, 329, 297, 314,  95, 578, 435 ,  0, 254, 391 ,448, 157, 301 },
+            { 353, 282, 110 ,324,  61, 208, 292, 250, 352, 154 ,  0, 435, 287, 184, 140 ,542 ,238 },
             //12
+            { 324, 638, 437, 240, 421, 329, 297, 314,  95, 578, 435 ,  0, 254, 391 ,448, 157, 301 },
+            //13
              { 70, 567, 191 , 27 ,346 , 83,  47,  68 ,189 ,439, 287, 254 ,  0, 145, 202 ,289 , 55 },
-             //13
+             //14
             { 211 ,466 , 74 ,182 ,243 ,105, 150 ,108 ,326, 336 ,184, 391 ,145  , 0 , 57 ,426  ,96 },
-            //14
-            { 268 ,420 , 53, 239, 199, 123, 207 ,165 ,383 ,240, 140, 448, 202 , 57  , 0 ,483 ,153 },
             //15
-            { 246 ,745, 472 ,237 ,528, 364 ,332 ,349 ,202, 685 ,542, 157, 289 ,426 ,483  , 0, 336 },
+            { 268 ,420 , 53, 239, 199, 123, 207 ,165 ,383 ,240, 140, 448, 202 , 57  , 0 ,483 ,153 },
             //16
+            { 246 ,745, 472 ,237 ,528, 364 ,332 ,349 ,202, 685 ,542, 157, 289 ,426 ,483  , 0, 336 },
+            //17
             { 121, 518 ,142 , 84 ,297 , 35 , 29, 36, 236, 390, 238 ,301  ,55  ,96 ,153, 336  , 0 },
            
         };
@@ -141,24 +141,6 @@ namespace traveling_salesman_console_ver
         {19,16,25,0 },
       
       };
-        static public long[,] DistanceMu = {
-            //0
-         { 0     ,   29    ,   82  ,      46     ,   68    ,    52    ,    72     ,   42     ,   51      ,  55     ,   29    ,    74  ,      23   ,     72   ,     46 },
-        { 29      ,   0     ,   55     ,   46     ,   42   ,     43  ,      43    ,    23    ,    23    ,    31    ,    41    ,    51    ,    11     ,   52     ,   21 },
-        { 82     ,   55    ,     0   ,     68   ,     46    ,    55    ,    23   ,     43   ,     41   ,     29     ,   79    ,    21    ,    64   ,     31    ,    51 },
-        { 46      ,  46     ,   68     ,    0  ,      82   ,     15   ,     72    ,    31    ,    62    ,    42    ,    21   ,     51   ,     51    ,    43   ,     64 },
-        { 68      ,  42       , 46     ,   82     ,    0   ,     74     ,   23    ,    52      ,  21    ,    46    ,    82     ,   58     ,   46     ,   65     ,   23 },
-        { 52     ,   43     ,   55     ,   15   ,     74     ,    0    ,    61      ,  23     ,   55   ,     31   ,     33    ,    37   ,     51    ,    29     ,   59 },
-        { 72     ,   43     ,   23      ,  72    ,    23    ,    61    ,     0     ,   42     ,   23    ,    31   ,     77     ,   37      ,  51      ,  46    ,    33 },
-        { 42    ,    23     ,   43     ,   31     ,   52    ,    23    ,    42   ,      0    ,    33     ,   15      ,  37     ,   33    ,    33    ,    31    ,   37 },
-        { 51    ,    23    ,    41    ,    62     ,   21    ,    55     ,   23    ,    33    ,     0     ,   29    ,    62     ,   46     ,   29     ,   51     ,   11 },
-       { 55    ,    31     ,   29      ,  42     ,  46     ,   31    ,    31    ,    15     ,   29    ,     0     ,   51     ,   21     ,   41    ,    23     ,   37 },
-       { 29      ,  41     ,   79     ,   21   ,     82     ,   33    ,    77   ,     37    ,    62   ,     51     ,   0   ,     65   ,     42  ,      59 ,       61 },
-       { 74     ,   51      ,  21       , 51     ,   58     ,   37     ,   37    ,    33     ,   46    ,    21    ,   65    ,     0     ,   61    ,    11  ,      55 },
-        { 23    ,    11     ,   64     ,   51     ,   46    ,    51    ,    51    ,    33     ,   29    ,    41   ,     42     ,   61    ,     0   ,     62  ,      23 },
-        { 72     ,  52      ,  31     ,   43    ,    65    ,    29    ,   46    ,    31  ,      51   ,     23   ,     59    ,    11     ,   62     ,    0    ,    59 },
-        { 46    ,    21    ,    51     ,   64    ,    23   ,    59    ,    33   ,     37    ,    11    ,    37    ,    61   ,     55    ,    23   ,     59    ,     0 },
-        };
         static void Main(string[] args)
         {
             for (int i = 0; i <= 12; i++)
@@ -170,7 +152,7 @@ namespace traveling_salesman_console_ver
             }
             //GenerateGraph graph = new GenerateGraph(1979);
             GenerateGraph graph = new GenerateGraph();
-            graph.from_tsp_data("D:/Work/Github/Repo/dj38.tsp");
+            graph.from_tsp_data("D:/Work/Github/Repo/ca4663.tsp");
             //for (int i = 0; i < graph.coordinate_graph.GetLength(0); i++)
             //{
             //    for (int j = 0; j < graph.coordinate_graph.GetLength(1); j++)
@@ -189,16 +171,12 @@ namespace traveling_salesman_console_ver
             //}
 
             Console.WriteLine("start now");
-            completeGraph.Hamilton_cycle minimum_cycle = new completeGraph.Hamilton_cycle();
-            completeGraph c = new completeGraph(DistanceMatrix);
-            minimum_cycle = c.FindMinHamiltonCycle();
-            minimum_cycle.printHamiltonCycle();
-            minimum_cycle.totalweight();
+            completeGraph c = new completeGraph(graph.distance_matrix);
             //Console.WriteLine("end now");
-            //c.printMinHamiltonPath();
-            //c.store_cycle();
-            //c.minimumHamiltonCycle.totalweight();
-            //c.printLastEdgeArbitaryPath();
+            c.printMinHamiltonPath();
+            c.store_cycle();
+            c.minimumHamiltonCycle.totalweight();
+            c.printLastEdgeArbitaryPath();
 
 
         }
