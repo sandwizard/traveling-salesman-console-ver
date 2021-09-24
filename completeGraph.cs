@@ -676,6 +676,14 @@ namespace traveling_salesman_console_ver
 
             Array.ForEach<Node>(sorted_nodes, p => Console.WriteLine(p.id + " " + p.sum_of_distances));
             Hamilton_cycle minimumHamiltonCycle = new Hamilton_cycle();
+            foreach (var node in Nodes)
+            {
+                Console.WriteLine("-----------------Candidate set of " + node.id + "------------------------------");
+                foreach (var c in node.candidate_set)
+                {
+                    Console.WriteLine("node {0} -to -{1} weight = {2} ", node.id, c.Key, c.Value);
+                }
+            }
 
             Console.WriteLine("%%%%%%%%%%%%%%%%%%%%% statr%%%%%%%%%%%%%%%%%");
             // first get first priority node i.e genesis node
