@@ -27,6 +27,9 @@ namespace traveling_salesman_console_ver
             Initialise_nodes();
 
         }
+        /// <summary>
+        /// processes the data and sorts them and initialise the nodes
+        /// </summary>
         public void Initialise_nodes()
         {
             // creatinf distance list and setting up genesis node
@@ -67,22 +70,6 @@ namespace traveling_salesman_console_ver
                 k++;
 
             }
-        }
-
-        public Node future(Node n)
-        {
-            Node future = new Node(n);
-            // remove candidate 1 from future
-            future.c1 = future.candidate_1();
-            future.candidate_set.Remove(future.c1.id);
-            future.c1 = future.candidate_1();
-            
-            future.c1 = future.candidate_1();
-            future.candidate_set.Remove(future.c1.id);
-            Console.WriteLine(" future c is " + future.c1.id);
-            return future;
-
-
         }
 
         public class Node
@@ -239,59 +226,7 @@ namespace traveling_salesman_console_ver
                        
             }
 
-            /// <summary>
-            /// return candidate at indes 2 in future implement a list for duplicate values;
-            /// </summary>
-            /// <returns></returns>
-            public Node candidate_2() 
-            {
-                this.c2 = Nodes[this.candidate_set.ElementAt(1).Key];
-                var c1_weight = this.candidate_set.ElementAt(0).Value;
-                var c2_weight = this.candidate_set.ElementAt(1).Value;
-                var edge_weight_compare = this.candidate_set.ElementAt(2).Value;
-                int i = 2;
-                while (c1_weight == c2_weight)
-                {
-                    // same value edges found compare priority and return
-                 
-                    this.c2 = Nodes[this.candidate_set.ElementAt(i).Key];
-                    c2_weight = this.candidate_set.ElementAt(i).Value;
-                                     
-                    i += 1;
-                    try 
-                    {
-                        edge_weight_compare = this.candidate_set.ElementAt(i).Value;
-                    }
-                    catch (System.ArgumentOutOfRangeException e) 
-                    {
-                    
-                    
-                    }
-                     // means till i candidate set has same values so return that whish has highest priority
-                }
-                // check for duplicated within c2 set
-                while(c2_weight == edge_weight_compare) 
-                {
-                    if (this.c2.priority < Nodes[this.candidate_set.ElementAt(i).Key].priority)
-                    {
-                        this.c2 = Nodes[this.candidate_set.ElementAt(i).Key];
-                    }
-                    i += 1;
-                    try 
-                    {
-                        edge_weight_compare = this.candidate_set.ElementAt(i).Value;
-                    }
-                    catch(System.ArgumentOutOfRangeException)
-                    {
-
-                    }
-                   
-
-
-                }  
-                return c2;
             
-            }
             // dictionary to represent distance to different locations
 
             //node constructor
@@ -328,7 +263,7 @@ namespace traveling_salesman_console_ver
             public bool match_left;
             public bool match_right;
             public Node right_coner_node;
-            public long lr_chains_divider_index;
+
             public long left_arm_priority;
             public long right_arm_priority;
             // returns the minimum entry in matrix
@@ -380,125 +315,6 @@ namespace traveling_salesman_console_ver
             }
 
 
-            /// <summary>
-            /// ie which edge to pick is determined will switch once half thed edges are found
-            /// </summary>
-            public void calculate_lr_priorities()
-            {     
-               
-                 this.left_arm_priority = this.left_coner_node.priority;
-                 this.right_arm_priority = this.right_coner_node.priority;
-                
-
-            }
-            /// <summary>
-            /// find distance traveler travels traveled left and right respectively
-            /// </summary>
-            /// <param name="optional_left"></param>
-            /// <param name="optional_right"></param>
-            public void calculate_lr_priorities_with_weights()                
-            {
-                Node left_c = this.left_coner_node.c1;
-                Node right_c = this.right_coner_node.c1;
-                int no_of_edges_found = this.edges.Count;
-                
-                if(no_of_edges_found == 1) 
-                {
-                    this.left_arm_priority = Getdistance(this.left_coner_node.id, left_c.id);
-                    this.right_arm_priority = Getdistance(this.right_coner_node.id, right_c.id);
-
-                }
-                else 
-                { // find cut off ie if even or odd
-                    long cutoff;
-                    if(no_of_edges_found% 2 == 0) 
-                    {
-                        //even
-                        cutoff = no_of_edges_found / 2;
-                    }
-                    else
-                    {
-                        cutoff = (no_of_edges_found - 1) / 2;
-                    }
-                    //starting priorities is equal to the weight of the c1 to left coner node
-                    this.left_arm_priority = Getdistance(this.left_coner_node.id, left_c.id);
-                    this.right_arm_priority = Getdistance(this.right_coner_node.id, right_c.id);
-                    // loop and add edge weights till cutoff
-                    Node current_left_hop = Nodes[this.left_coner_node.id];
-                    Node current_right_hop = Nodes[this.right_coner_node.id];
-                    //Console.WriteLine("left p is " + left_arm_priority);
-                    //Console.WriteLine("right pis " + right_arm_priority);
-
-                    Console.WriteLine("cutoff is " + cutoff);
-
-                    for (int i = 0; i <cutoff; i++) 
-                    {
-                        //Console.WriteLine("current right hop is " + current_right_hop.id);
-                        //Console.WriteLine("current left hop is " + current_left_hop.id);
-
-                       // Console.WriteLine("left p is {0} + {1} " ,left_arm_priority ,current_left_hop.right_edge.weight);
-                        //Console.WriteLine("right p is {0} + {1} " ,right_arm_priority, current_right_hop.left_edge.weight);
-                        this.left_arm_priority += current_left_hop.right_edge.weight;
-                        current_left_hop = current_left_hop.right_edge.right_Node;
-                        this.right_arm_priority += current_right_hop.left_edge.weight;
-                        current_right_hop = current_right_hop.left_edge.left_Node;
-                   
-
-                    }
-                    // if edges found is greater than one
-                }
-                //if (this.left_coner_node.has_duplicates) 
-                //{
-                //    //Console.WriteLine("has dups pis" );
-                //    var edge_weight = this.left_coner_node.candidate_set.ElementAt(0).Value;
-                //    var comp_weight = this.left_coner_node.candidate_set.ElementAt(1).Value;
-                //    int count = 1;
-                //    this.left_arm_priority -= edge_weight;
-                //    while (edge_weight == comp_weight) 
-                //    {
-                        
-                //        try 
-                //        {   
-                            
-                //            comp_weight = this.left_coner_node.candidate_set.ElementAt(count).Value;
-                //        }
-                //        catch (System.ArgumentOutOfRangeException) 
-                //        {
-                //            break;
-                        
-                //        }
-                //        this.left_arm_priority += edge_weight;
-                //        count++;
-                //    }
-
-                //}
-                //if (this.right_coner_node.has_duplicates)
-                //{
-                //    //Console.WriteLine("has dups pis");
-                //    var edge_weight = this.right_coner_node.candidate_set.ElementAt(0).Value;
-                //    var comp_weight = this.right_coner_node.candidate_set.ElementAt(1).Value;
-                //    int count = 1;
-                //    this.right_arm_priority -= edge_weight;
-                //    while (edge_weight == comp_weight)
-                //    {
-                        
-                //        try
-                //        {
-                            
-                //            comp_weight = this.right_coner_node.candidate_set.ElementAt(count).Value;
-                //        }
-                //        catch (System.ArgumentOutOfRangeException)
-                //        {
-                //            break;
-
-                //        }
-                //        this.right_arm_priority += edge_weight;
-                //        count++;
-                //    }
-
-                //}
-
-            }
             /// <summary>
             /// adds edge e to hamilton cycle h
             /// </summary>
@@ -743,8 +559,7 @@ namespace traveling_salesman_console_ver
 
 
                 // now calculate weight sums
-                minimumHamiltonCycle.calculate_lr_priorities_with_weights();
-
+               
                 if (left_c.id == right_c.id)
                 {
                     Console.WriteLine("c is " + left_c.id);
