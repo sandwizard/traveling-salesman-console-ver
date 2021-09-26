@@ -19,7 +19,7 @@ according to https://www.math.uwaterloo.ca/tsp/world/lulog.html
 
 my algorithm
 
-sollution : 12894
+sollution : 13885
 
 sollution time :few millisec on an modern cpu
 
