@@ -6,7 +6,9 @@ Without drastic change in increase in nodes.
 /////A dead end to finding optimal though
 
 
-# new proposition
+# other branches
+
+working on it
 
 basing algorithm on priority
 
