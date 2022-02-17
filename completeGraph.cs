@@ -54,12 +54,15 @@ namespace traveling_salesman_console_ver
                 Sort(temp);
                 Nodes[i] = temp;
             }
+            sortNodes();
+           
+        }
+        public static void sortNodes()
+        {
             Dictionary<long, long> prioritised_nodes = new Dictionary<long, long>();
             foreach (Node n in Nodes)
             {
                 prioritised_nodes.Add(n.id, n.sum_of_distances);
-
-
             }
             //Console.WriteLine("not overflowing here");
             prioritised_nodes = prioritised_nodes.OrderByDescending(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
@@ -270,23 +273,45 @@ namespace traveling_salesman_console_ver
             public Undirected_Edge findGenesis_edge() 
             {
                 // for each entry of smallest edge find nodes on priority                
-                // first find genesis Node
-                foreach(Node n in sorted_nodes) 
-                {
-                    long weight_to_candidate1 = n.distance[n.candidate_1().id];
-                    if(weight_to_candidate1 == smallestEdge_weight) 
-                    {
-                        this.genesisNode = Nodes[n.id];
-                        break;                    
-                    }                              
-                }
-                Undirected_Edge genesis_edge = new Undirected_Edge(genesisNode, genesisNode.candidate_1());
+                // first find genesis Node           
+                this.genesisNode = sorted_nodes[0];
+                Undirected_Edge genesis_edge = new Undirected_Edge(sorted_nodes[0], genesisNode.candidate_1());
                 return genesis_edge;
             }
 
 
-         
+            public void updatepriority(Undirected_Edge e,Node[] nodes)
+            {
+                foreach(Node n in nodes)
+                {
+                    //Console.WriteLine(n.id + ":" + n.priority);
+                    n.priority -= Getdistance(n.id, e.left_Node.id);
+                    //Console.WriteLine(n.id + ":" + n.priority);
+                    n.priority -= Getdistance(n.id, e.right_Node.id);
+                }
+               
 
+            }
+            public void update_leftpicked_priority(Undirected_Edge e, Node[] nodes)
+            {
+                foreach (Node n in nodes)
+                {
+                    //Console.WriteLine(n.id + ":" + n.priority);
+                    n.priority -= Getdistance(n.id, e.left_Node.id);
+                    //Console.WriteLine(n.id + ":" + n.priority);
+                }
+
+            }
+            public void update_rightpicked_priority(Undirected_Edge e, Node[] nodes)
+            {
+                foreach (Node n in nodes)
+                {
+                    //Console.WriteLine(n.id + ":" + n.priority);
+                    n.priority -= Getdistance(n.id, e.right_Node.id);
+                    //Console.WriteLine(n.id + ":" + n.priority);
+                }
+
+            }
             public Dictionary<string, Undirected_Edge> edges;
             public long totalweight()
             {
@@ -401,6 +426,7 @@ namespace traveling_salesman_console_ver
 
 
             public Undirected_Edge() { }
+            
             public Undirected_Edge(Node ln, Node rn)
             {
                 this.left_Node = Nodes[ln.id];
@@ -485,13 +511,9 @@ namespace traveling_salesman_console_ver
         /// <param name="n1"></param>
         /// <param name="n2"></param>
 
-
-        public Hamilton_cycle FindMinHamiltonCycle()
+        public void print_info()
         {
-            // this is the minimum hamilton cycle
-
-            Array.ForEach<Node>(sorted_nodes, p => Console.WriteLine(p.id + " " + p.sum_of_distances));
-            Hamilton_cycle minimumHamiltonCycle = new Hamilton_cycle();
+            Array.ForEach<Node>(sorted_nodes, p => Console.WriteLine(p.id + " " + p.priority));
             foreach (var node in Nodes)
             {
                 Console.WriteLine("-----------------Candidate set of " + node.id + "------------------------------");
@@ -500,6 +522,29 @@ namespace traveling_salesman_console_ver
                     Console.WriteLine("node {0} -to -{1} weight = {2} ", node.id, c.Key, c.Value);
                 }
             }
+
+        }
+        public Node highestprio(Node[] nodes)
+        {
+            Node highest = nodes[0];
+            foreach(Node node in nodes)
+            {
+                if (node.priority > highest.priority)
+                {
+                    highest = node;
+                }
+
+
+            }
+            return highest;
+        }
+        public Hamilton_cycle FindMinHamiltonCycle()
+        {
+            // this is the minimum hamilton cycle
+
+            print_info();
+            Hamilton_cycle minimumHamiltonCycle = new Hamilton_cycle();
+            
 
             Console.WriteLine("%%%%%%%%%%%%%%%%%%%%% statr%%%%%%%%%%%%%%%%%");
             // first get first priority node i.e genesis node
@@ -513,11 +558,12 @@ namespace traveling_salesman_console_ver
             minimumHamiltonCycle.right_coner_node = Nodes[g.right_Node.id];
             // addig edge 
             minimumHamiltonCycle.add_edge_to_cycle(g);
+            minimumHamiltonCycle.updatepriority(g, Nodes);
+            //minimumHamiltonCycle.updatepriority(g, sorted_nodes);
+            print_info();
 
             Node left_c = minimumHamiltonCycle.left_coner_node.candidate_1();
             Node right_c = minimumHamiltonCycle.right_coner_node.candidate_1();
-            Console.WriteLine("left c1 is " + left_c.id);
-            Console.WriteLine("right c1 is " + right_c.id);
 
             /// implement duplicates
             // first 2 edges
@@ -526,22 +572,7 @@ namespace traveling_salesman_console_ver
             Undirected_Edge e = new Undirected_Edge();
             Undirected_Edge d = new Undirected_Edge();
             d = null;
-            // later find 2 cycles one from staring left and one from staring right
-            // o
-
-
-            // after first 2 edges are picked
-            // checking if conors aur updated
-            long half_point;
-            if (no_of_nodes % 2 == 0)
-            {
-                //even
-                half_point = no_of_nodes / 2;
-            }
-            else
-            {
-                half_point = (no_of_nodes - 1) / 2;
-            }
+            
 
             while (minimumHamiltonCycle.edges.Count < no_of_nodes - 2)
             {
@@ -562,12 +593,11 @@ namespace traveling_salesman_console_ver
                
                 if (left_c.id == right_c.id)
                 {
-                    Console.WriteLine("c is " + left_c.id);
+                    Console.WriteLine("c is same " + left_c.id);
 
 
-                    // look to the future 
-                    long option_left_value;
-                    long option_right_value;
+
+                   
                     long c_id = left_c.id;
                     // if left edge is picked find futur of right
                     if (minimumHamiltonCycle.left_coner_node.candidate_set.Count == 1 || minimumHamiltonCycle.right_coner_node.candidate_set.Count == 1)
@@ -584,52 +614,57 @@ namespace traveling_salesman_console_ver
                         Console.WriteLine(" left current c is" + minimumHamiltonCycle.left_coner_node.candidate_1().id);
 
 
-                        Console.WriteLine(" left future c is" + right_future.id);
+                        Console.WriteLine(" left future c is" + left_future.id);
 
-                        option_left_value = Getdistance(minimumHamiltonCycle.left_coner_node.id, c_id) + Getdistance(minimumHamiltonCycle.right_coner_node.id, right_future.id);
-                        option_right_value = Getdistance(minimumHamiltonCycle.right_coner_node.id, c_id) + Getdistance(minimumHamiltonCycle.left_coner_node.id, left_future.id);
-                        Console.WriteLine("if left picked weight sum = {0} if right is picked weight sum ={1}", option_left_value, option_right_value);
-
-                        if (option_left_value < option_right_value)
+                        if (left_future.priority > right_future.priority)
                         {
-                            e = new Undirected_Edge(Nodes[left_c.id], minimumHamiltonCycle.left_coner_node);
-                            minimumHamiltonCycle.right_coner_node.candidate_set.Remove(left_c.id);
-                            left_c.candidate_set.Remove(minimumHamiltonCycle.right_coner_node.id);
-
-                        }
-                        else if (option_left_value == option_right_value)
-                        {
-                            Console.WriteLine(" c matches and future weights is same");
-                            if (minimumHamiltonCycle.left_arm_priority < minimumHamiltonCycle.right_arm_priority)
+                            //left_future future and right c set  pick
+                            if (left_future.priority > right_c.priority)
                             {
-                                // left has less weight so pick left unless swaped;
-                                e = new Undirected_Edge(Nodes[left_c.id], minimumHamiltonCycle.left_coner_node);
-                                minimumHamiltonCycle.right_coner_node.candidate_set.Remove(left_c.id);
-                                left_c.candidate_set.Remove(minimumHamiltonCycle.right_coner_node.id);
+                                e = new Undirected_Edge(Nodes[left_future.id], minimumHamiltonCycle.left_coner_node);
+                                minimumHamiltonCycle.right_coner_node.candidate_set.Remove(left_future.id);
+                                left_future.candidate_set.Remove(minimumHamiltonCycle.right_coner_node.id);
+                                minimumHamiltonCycle.update_leftpicked_priority(e, Nodes);
+
+                                //left future edge pick
+                            }
+                            else
+                            {
+                                //right c edge pick
+                                e = new Undirected_Edge( minimumHamiltonCycle.right_coner_node, Nodes[right_c.id]);
+                                minimumHamiltonCycle.left_coner_node.candidate_set.Remove(right_c.id);
+                                right_c.candidate_set.Remove(minimumHamiltonCycle.left_coner_node.id);
+                                minimumHamiltonCycle.update_rightpicked_priority(g, Nodes);
+                            }
+                        }
+                        else
+                        { //right_future future and left c set  pick
+                            if (right_future.priority > left_c.priority)
+                            {
+                                //right future pick
+                                e = new Undirected_Edge( minimumHamiltonCycle.right_coner_node, Nodes[right_future.id]);
+                                minimumHamiltonCycle.left_coner_node.candidate_set.Remove(right_future.id);
+                                right_future.candidate_set.Remove(minimumHamiltonCycle.left_coner_node.id);
+                                minimumHamiltonCycle.update_rightpicked_priority(g, Nodes);
 
                             }
                             else
                             {
-                                e = new Undirected_Edge(minimumHamiltonCycle.right_coner_node, Nodes[right_c.id]);
-                                minimumHamiltonCycle.left_coner_node.candidate_set.Remove(right_c.id);
-                                right_c.candidate_set.Remove(minimumHamiltonCycle.left_coner_node.id);
+                                //left c pick
+                                e = new Undirected_Edge(Nodes[left_c.id], minimumHamiltonCycle.left_coner_node);
+                                minimumHamiltonCycle.right_coner_node.candidate_set.Remove(left_c.id);
+                                left_c.candidate_set.Remove(minimumHamiltonCycle.right_coner_node.id);
+                                minimumHamiltonCycle.update_leftpicked_priority(e, Nodes);
+
+
 
                             }
 
 
                         }
-                        else
-                        {
-                            e = new Undirected_Edge(minimumHamiltonCycle.right_coner_node, Nodes[right_c.id]);
-                            minimumHamiltonCycle.left_coner_node.candidate_set.Remove(right_c.id);
-                            right_c.candidate_set.Remove(minimumHamiltonCycle.left_coner_node.id);
-
-                        }
-
+                       
                     }
-
-
-
+                    print_info();
                 }
                 else
                 {
